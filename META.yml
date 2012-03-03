@@ -1,0 +1,20 @@
+---
+abstract: 'Support for the SPDY protocol'
+author:
+  - 'Tom Molesworth <tom@entitymodel.com>'
+build_requires:
+  Test::Fatal: 0.010
+  Test::More: 0.98
+configure_requires:
+  ExtUtils::MakeMaker: 6.30
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.300009, CPAN::Meta::Converter version 2.120530'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Protocol-SPDY
+requires:
+  Try::Tiny: 0
+  parent: 0
+version: 0.001
