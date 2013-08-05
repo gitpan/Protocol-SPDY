@@ -1,11 +1,10 @@
 package Protocol::SPDY::Frame::Control;
 {
-  $Protocol::SPDY::Frame::Control::VERSION = '0.001';
+  $Protocol::SPDY::Frame::Control::VERSION = '0.999_001';
 }
 use strict;
 use warnings;
 use parent qw(Protocol::SPDY::Frame);
-use Protocol::SPDY::Constants ':all';
 
 =head1 NAME
 
@@ -13,7 +12,7 @@ Protocol::SPDY::Frame::Control - control frame subclass for the SPDY protocol
 
 =head1 VERSION
 
-version 0.001
+version 0.999_001
 
 =head1 DESCRIPTION
 
@@ -22,141 +21,110 @@ L<Protocol::SPDY> object.
 
 Subclass of L<Protocol::SPDY::Frame>. See also L<Protocol::SPDY::Frame::Data>.
 
+=head2 TYPES
+
+The following control frame types are known:
+
+=over 4
+
+=item * L<SYN_STREAM|Protocol::SPDY::Frame::Control::SYN_STREAM>
+
+=item * L<RST_STREAM|Protocol::SPDY::Frame::Control::RST_STREAM>
+
+=item * L<SYN_REPLY|Protocol::SPDY::Frame::Control::SYN_REPLY>
+
+=item * L<HEADERS|Protocol::SPDY::Frame::Control::HEADERS>
+
+=item * L<CREDENTIAL|Protocol::SPDY::Frame::Control::CREDENTIAL>
+
+=item * L<GOAWAY|Protocol::SPDY::Frame::Control::GOAWAY>
+
+=item * L<PING|Protocol::SPDY::Frame::Control::PING>
+
+=item * L<SETTINGS|Protocol::SPDY::Frame::Control::SETTINGS>
+
+=back
+
+=cut
+
+use Protocol::SPDY::Constants ':all';
+
 =head1 METHODS
 
 =cut
 
-sub new {
-	my ($class, %args) = @_;
-	my $self = $class->SUPER::new(%args);
-	return $self;
-}
+=head2 is_control
+
+This is a control frame, so it will return true.
+
+=cut
 
 sub is_control { 1 }
+
+=head2 is_data
+
+This is not a data frame, so it returns false.
+
+=cut
+
 sub is_data { 0 }
 
-=head2 update_frametype_bit
+=head2 version
+
+The version for this frame - probably 3.
 
 =cut
 
-sub update_frametype_bit { shift->update_control_type_id }
-
-=head2 control_version
-
-=cut
-
-sub control_version {
-	my $self = shift;
-	if(@_) {
-		my $id = shift;
-		$self->{control_version} = $id;
-		$self->update_control_version;
-		return $self;
-	}
-	unless(exists($self->{control_version})) {
-		$self->{control_version} = unpack('n1', substr $self->packet, 0, 2) >> 1;
-	}
-	return $self->{control_version};
+sub version {
+	die "no version for $_[0]" unless $_[0]->{version};
+	shift->{version}
 }
 
-=head2 control_type
+=head2 type
+
+The numerical type for this frame.
 
 =cut
 
-sub control_type {
-	my $self = shift;
-	if(@_) {
-		my $id = shift;
-		$self->{control_type} = $id;
-		$self->update_control_type;
-		return $self;
-	}
-	unless(exists($self->{control_type})) {
-		$self->{control_type} = unpack('n1', substr $self->packet, 2, 2) >> 1;
-	}
-	return $self->{control_type};
-}
+sub type { FRAME_TYPE_BY_NAME->{ shift->type_name } }
 
-=head2 control_flags
+=head2 uni
+
+Unidirectional flag (if set, we expect no response from the other side).
 
 =cut
 
-sub control_flags {
-	my $self = shift;
-	if(@_) {
-		my $flags = shift;
-		$self->{control_flags} = $flags;
-		$self->update_control_flags;
-		return $self;
-	}
-	unless(exists($self->{control_flags})) {
-		$self->{control_flags} = unpack 'C1', substr $self->packet, 4, 1;
-	}
-	return $self->{control_flags};
-}
+sub uni { shift->{uni} }
 
-=head2 flag_fin
+=head2 compress
+
+The compression flag. Used on some frames.
 
 =cut
 
-sub flag_fin {
-	my $self = shift;
-	if(@_) {
-		my $fin = shift;
-		my $flags = $self->control_flags;
-		$self->control_flags($fin ? $flags | FLAG_FIN : $flags & ~FLAG_FIN);
-		return $self;
-	}
-	$self->control_flags & FLAG_FIN
-}
+sub compress { shift->{compress} }
 
-=head2 update_stream_id
+=head2 as_packet
+
+Returns the byte representation for this frame.
 
 =cut
-
-sub update_stream_id {
-	my $self = shift;
-	substr $self->{packet}, 0, 4, pack 'N1', (($self->is_data & 0x01) | ($self->stream_id << 1));
-	return $self;
-}
-
-=head2 update_control_flags
-
-Updates the control_flags
-
-=cut
-
-sub update_control_flags {
-	my $self = shift;
-	substr $self->{packet}, 4, 1, pack 'C1', ($self->control_flags & 0xFF);
-	return $self;
-}
 
 sub as_packet {
 	my $self = shift;
-	my $base = $self->SUPER::as_packet(@_);
-	my $pkt = "\0" x 8;
-	vec($pkt, 0, 16) = ($self->is_control ? 0x8000 : 0x0000) | ($self->control_version & 0x7FFF);
-	vec($pkt, 1, 16) = $self->control_type;
-	vec($pkt, 2, 16) = (($self->control_flags & 0xFF) << 24) | ($self->length & 0x00FFFFFF);
-	return $base . $pkt;
+	my %args = @_;
+	my $len = length($args{payload});
+	warn "undef: " . join ',', $_ for grep !defined($self->$_), qw(version type);
+	my $pkt = pack 'n1n1C1n1C1',
+		($self->is_control ? 0x8000 : 0x0000) | ($self->version & 0x7FFF),
+		$self->type,
+		($self->fin ? FLAG_FIN : 0) | ($self->uni ? FLAG_UNI : 0) | ($self->compress ? FLAG_COMPRESS : 0),
+		$len >> 8,
+		$len & 0xFF;
+	$pkt .= $args{payload};
+	# warn "done packet: $pkt\n";
+	return $pkt;
 }
-
-=head2 flag_compress
-
-=cut
-
-sub flag_compress {
-	my $self = shift;
-	if(@_) {
-		my $comp = shift;
-		my $flags = $self->control_flags;
-		$self->control_flags($comp ? ($flags | FLAG_COMPRESS) : ($flags & ~FLAG_COMPRESS));
-		return $self;
-	}
-	$self->control_flags & FLAG_COMPRESS
-}
-
 
 =head2 pairs_to_nv_header
 
@@ -165,11 +133,50 @@ Returns a name-value pair header block.
 =cut
 
 sub pairs_to_nv_header {
-	my $class = shift;
+	shift;
 	my @hdr = @_;
-	my $data = pack 'n1', @hdr / 2;
-	$data .= pack '(n/A*)*', @hdr;
+	my $data = pack 'N1', @hdr / 2;
+	$data .= pack '(N/A*)*', @hdr;
 	return $data;
+}
+
+=head2 find_class_for_type
+
+Returns the class appropriate for the given type (can be numerical
+or string representation).
+
+=cut
+
+sub find_class_for_type {
+	shift;
+	my $type = shift;
+	my $name = exists FRAME_TYPE_BY_NAME->{$type} ? $type : FRAME_TYPE_BY_ID->{$type} or die "No class for $type";
+	return 'Protocol::SPDY::Frame::Control::' . $name;
+}
+
+=head2 from_data
+
+Instantiates a frame from the given bytes.
+
+=cut
+
+sub from_data {
+	my $class = shift;
+	my %args = @_;
+	my $type = $args{type};
+	my $target_class = $class->find_class_for_type($type);
+	return $target_class->from_data(%args);
+}
+
+=head2 to_string
+
+String representation for debugging.
+
+=cut
+
+sub to_string {
+	my $self = shift;
+	$self->SUPER::to_string . ', control';
 }
 
 1;
@@ -198,4 +205,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2011-2012. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2011-2013. Licensed under the same terms as Perl itself.

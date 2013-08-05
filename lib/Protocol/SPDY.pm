@@ -2,8 +2,9 @@ package Protocol::SPDY;
 # ABSTRACT: Support for the SPDY protocol
 use strict;
 use warnings;
+use 5.010;
 
-our $VERSION = '0.001';
+our $VERSION = '0.999_001';
 
 =head1 NAME
 
@@ -11,20 +12,64 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.001
+version 0.999_001
+
+=head1 SYNOPSIS
+
+ use Protocol::SPDY;
+
+=cut
+
+# Pull in all the required pieces
+use Protocol::SPDY::Constants ':all';
+
+# Helpers
+use curry;
+use Future;
+
+# Support for deflate/gzip
+use Protocol::SPDY::Compress;
+
+# Basic frame wrangling
+use Protocol::SPDY::Frame;
+use Protocol::SPDY::Frame::Control;
+use Protocol::SPDY::Frame::Data;
+
+# Specific frame types
+use Protocol::SPDY::Frame::Control::SETTINGS;
+use Protocol::SPDY::Frame::Control::SYN_STREAM;
+use Protocol::SPDY::Frame::Control::SYN_REPLY;
+use Protocol::SPDY::Frame::Control::RST_STREAM;
+use Protocol::SPDY::Frame::Control::PING;
+use Protocol::SPDY::Frame::Control::GOAWAY;
+use Protocol::SPDY::Frame::Control::HEADERS;
+use Protocol::SPDY::Frame::Control::WINDOW_UPDATE;
+use Protocol::SPDY::Frame::Control::CREDENTIAL;
+
+# Stream management
+use Protocol::SPDY::Stream;
+
+# Client/server logic
+use Protocol::SPDY::Server;
+use Protocol::SPDY::Client;
+use Protocol::SPDY::Tracer;
+use Protocol::SPDY::Proxy;
+
+1;
+
+__END__
 
 =head1 DESCRIPTION
 
-NOTE: This is a rewrite of the original Protocol::SPDY implementation,
-and as such is still very much in an early stage of development. Primary
-focus is on providing server-side SPDY implementation for use with
-browsers such as Chrome and Firefox (at the time of writing, the
-development track for Firefox11 has initial SPDY support).
-
 Provides an implementation for the SPDY protocol at an abstract (in-memory buffer) level.
-This means that these modules aren't much use on their own, since they only deal with the
-abstract protocol. If you want to add SPDY client or server support to your code, you'll
-need a transport as well - try one of these yet-to-be-released modules:
+
+This module will B<not> initiate or receive any network connections on its own.
+
+It is intended for use as a base on which to build web server/client implementations
+using whichever transport mechanism is appropriate.
+
+This means that if you want to add SPDY client or server support to your code, you'll
+need a transport as well:
 
 =over 4
 
@@ -32,23 +77,37 @@ need a transport as well - try one of these yet-to-be-released modules:
 
 =item * L<Net::Async::SPDY::Client> - connect to SPDY servers using L<IO::Async>
 (although once this is stable support may be added to L<Net::Async::HTTP>,
-see L<https://rt.cpan.org/Ticket/Display.html?id=74387> for progress on this.
+see L<#74387|https://rt.cpan.org/Ticket/Display.html?id=74387> for progress on this).
 
 =back
 
-Eventually L<POE> or L<AnyEvent> implementations may arrive if someone more
-familiar with those frameworks takes an interest. On the server side, it should
-be possible to incorporate this as a plugin for Plack/PSGI so that any PSGI-compatible
-web application can support SPDY requests.
+Eventually L<POE> or L<Reflex> implementations may arrive, if someone more familiar
+with those frameworks takes an interest.
 
-For a simple blocking client and server implementation, see the examples/ directory.
+
+On the server side, it should be possible to incorporate this as a plugin for
+Plack/PSGI so that any PSGI-compatible web application can support basic SPDY
+requests. Features that plain HTTP doesn't support, such as server push or
+prioritisation, may require PSGI extensions. Although I don't use PSGI myself,
+I'd be happy to help add any necessary support required to allow these extra
+features - the L<Web::Async> framework may be helpful as a working example for
+SPDY-specific features.
+
+Primary focus is on providing server-side SPDY implementation for use with
+browsers such as Chrome and Firefox (at the time of writing, Firefox has had
+optional support for SPDY since version 11, and IE11 is also rumoured to
+provide SPDY/3 support). The Android browser has supported SPDY for some time (since
+Android 3.0+?).
+
+See the L</EXAMPLES> section below for some basic code examples.
 
 =head1 IMPLEMENTATION CONSIDERATIONS
 
 The information in L<http://www.chromium.org/spdy> may be useful when implementing clients
 (browsers).
 
-This abstract protocol class requires a transport implementation.
+See the L</COMPONENTS> section for links to the main classes you'll be needing
+if you're writing your own transport.
 
 =head2 UPGRADING EXISTING HTTP OR HTTPS CONNECTIONS
 
@@ -74,341 +133,28 @@ This information could also be provided via the Alternate-Protocol header:
 
  Alternate-Protocol: 2443:spdy/2,443:npn-spdy/2,443:npn-spdy/3
 
-=cut
-
-# Pull in all the required pieces
-use Protocol::SPDY::Constants ':all';;
-
-use Protocol::SPDY::Frame;
-use Protocol::SPDY::Frame::Control;
-use Protocol::SPDY::Frame::Data;
-
-use Protocol::SPDY::Stream;
-
-=head1 METHODS
-
-=cut
-
-=head2 request_close
-
-If we want to close, send a GOAWAY message first
-
-=cut
-
-sub request_close {
-	my $self = shift;
-	$self->send_message(GOAWAY => );
-}
-
-=head2 check_version
-
-Called before we do anything with a control frame.
-
-Returns true if it's supported, false if not.
-
-=cut
-
-sub check_version {
-	my ($self, $frame) = @_;
-	if($frame->version > MAX_SUPPORTED_VERSION) {
-		# Send a reset if this was a SYN_STREAM
-		$self->send_frame(RST_STREAM => { status => UNSUPPORTED_VERSION }) if $frame->type == SYN_STREAM;
-		# then bail out (we do this for any frame type
-		return 0;
-	}
-	return 1;
-}
-
-=head2 check_stream_id
-
-Check whether we have established this stream before allowing it to continue
-
-Returns true if it's okay, false if not.
-
-=cut
-
-sub check_stream_id {
-	my ($self, $frame) = @_;
-
-	unless(exists $self->{stream_id}{$frame->stream_id}) {
-		$self->send_frame(RST_STREAM => { code => INVALID_STREAM }) ;
-		return 0;
-	}
-
-	return 1;
-}
-
-# check for SYN_REPLY
-
-=head2 create_stream
-
-Create a stream.
-
-Returns the stream ID, or 0 if we can't create any more on this connection.
-
-=cut
-
-sub create_stream {
-	my ($self, %args) = @_;
-	my $id = $self->next_stream_id or return 0;
-	$self->send_frame(SYN_STREAM => {
-		stream_id => $id,
-		unidirectional => $args{unidirectional} ? 1 : 0,
-	});
-	return $id;
-}
-
-=head2 next_stream_id
-
-Generate the next stream ID for this connection.
-
-Returns the next available stream ID, or 0 if we're out of available streams
-
-=cut
-
-sub next_stream_id {
-	my $self = shift;
-	# TODO Why 2?
-	$self->{last_stream_id} += 2;
-	return $self->{last_stream_id} if $self->{last_stream_id} <= 0x7FFFFFFF;
-	return 0;
-}
-
-=head2 packet_syn_stream
-
-Generate a SYN_STREAM packet.
-
-Takes the following options:
+=head2 PACKET SEQUENCE
 
 =over 4
 
-=item *
+=item * Typically both sides would send a SETTINGS packet first.
+
+=item * This would be followed by SYN_STREAM from the client corresponding to the
+initial HTTP request.
+
+=item * The server responds with SYN_REPLY containing the HTTP response headers.
+
+=item * Either side may send data frames for active streams until the FIN
+flag is set on a packet for that stream
+
+=item * A request is complete when the stream on both sides is in FIN state.
+
+=item * Further requests may be issued using SYN_STREAM
+
+=item * If some time has passed since the last packet from the other side, a PING frame
+may be sent to verify that the connection is still active.
 
 =back
-
-=cut
-
-sub packet_syn_stream {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_syn_reply
-
-Generate a SYN_REPLY packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_syn_reply {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_rst_stream
-
-Generate a RST_STREAM packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_rst_stream {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_settings
-
-Generate a SETTINGS packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_settings {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_noop
-
-Generate a SYN_STREAM packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_noop {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_ping
-
-Generate a PING packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_ping {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_goaway
-
-Generate a GOAWAY packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_goaway {
-	my ($self, %args) = @_;
-}
-
-=head2 packet_headers
-
-Generate a HEADERS packet.
-
-Takes the following options:
-
-=over 4
-
-=item *
-
-=back
-
-=cut
-
-sub packet_headers {
-	my ($self, %args) = @_;
-}
-
-sub packet_request {
-	my ($self, %args) = @_;
-
-	my $uri = $args{uri} or die "No URI provided";
-
-	# All headers must be lowercase
-	my %hdr = map { lc($_) => $args{header}{$_} } keys %{$args{header}};
-
-	# These would be ignored anyway, drop 'em if we have 'em to save
-	# some bandwidth
-	delete $hdr{qw(connection keep-alive host)};
-
-	# Apply method directly
-	$hdr{method} = delete $args{method};
-
-	# Unpack the URI 
-	$hdr{scheme} = $uri->scheme;
-	$hdr{url} = $uri->path_query;
-	$hdr{version} = $args{version} || 'HTTP/1.1';
-}
-
-=head2 parse_request
-
-Convert an incoming HTTP-over-SPDY packet into a data structure and send appropriate event(s).
-
-=cut
-
-sub parse_request {
-	my ($self, %args) = @_;
-
-	my $uri = $args{uri} or die "No URI provided";
-
-	# All headers must be lowercase
-	my %hdr = map { lc($_) => $args{header}{$_} } keys %{$args{header}};
-
-	# These would be ignored anyway, drop 'em if we have 'em to save
-	# some bandwidth
-	delete $hdr{qw(connection keep-alive host)};
-
-	# Apply method directly
-	$hdr{method} = delete $args{method};
-
-	# Unpack the URI 
-	$hdr{scheme} = $uri->scheme;
-	$hdr{url} = $uri->path_query;
-	$hdr{version} = $args{version} || 'HTTP/1.1';
-}
-
-=head2 packet_response
-
-Generate a response packet.
-
-=cut
-
-sub packet_response {
-	my ($self, %args) = @_;
-	# All headers must be lowercase
-	my %hdr = map { lc($_) => $args{header}{$_} } keys %{$args{header}};
-	delete $hdr{qw(connection keep-alive)};
-	$hdr{status} = $args{status};
-	$hdr{version} = $args{version} || 'HTTP/1.1';
-}
-
-sub parse_response {
-	my ($self, $pkt) = @_;
-
-	my $hdr = $self->extract_headers_from_packet($pkt);
-	unless($hdr->{status}) {
-		$self->send_frame(RST_STREAM => { error => PROTOCOL_ERROR });
-		return $self;
-	}
-}
-
-sub send_frame {
-	my $self = shift;
-	my ($type, $data) = @_;
-	$self->write($self->build_packet($type, $data));
-	return $self;
-}
-
-sub build_packet {
-	my $self = shift;
-	my ($type, $data) = @_;
-	return Protocol::SPDY::Frame::Control->new(
-		type	=> RST_STREAM,
-	);
-}
-
-1;
-
-__END__
 
 =head1 COMPONENTS
 
@@ -416,21 +162,347 @@ Further documentation can be found in the following modules:
 
 =over 4
 
+=item * L<Protocol::SPDY::Server> - handle the server side of the connection. This
+would typically be used for incorporating SPDY support into a server.
+
+=item * L<Protocol::SPDY::Client> - handle the client side of the connection. This
+could be used for making SPDY requests as a client.
+
+=item * L<Protocol::SPDY::Tracer> - if you want to check the packets that are being
+generated, try this class for basic packet-level debugging.
+
+=item * L<Protocol::SPDY::Stream> - handling for 'streams', which are somewhat
+analogous to individual HTTP requests
+
 =item * L<Protocol::SPDY::Frame> - generic frame class
 
 =item * L<Protocol::SPDY::Frame::Control> - specific subclass for control frames
 
 =item * L<Protocol::SPDY::Frame::Data> - specific subclass for data frames
 
-=item * L<Protocol::SPDY::Stream> - handling for 'streams', which are somewhat
-analogous to individual HTTP requests
-
 =back
+
+Each control frame type has its own class, see L<Protocol::SPDY::Frame::Control/TYPES>
+for links.
+
+=head1 EXAMPLES
+
+SSL/TLS next protocol negotiation for SPDY/3 with HTTP/1.1 fallback:
+
+ #!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+ # Simple example showing NPN negotiation using IO::Async::SSL.
+ # The same SSL_* parameters are supported by IO::Socket::SSL.
+ 
+ use IO::Socket::SSL qw(SSL_VERIFY_NONE);
+ use IO::Async::Loop;
+ use IO::Async::SSL;
+ 
+ my $loop = IO::Async::Loop->new;
+ $loop->SSL_listen(
+ 	addr => {
+ 		family   => "inet",
+ 		socktype => "stream",
+ 		port     => 0,
+ 	},
+ 	SSL_npn_protocols => [ 'spdy/3', 'http1.1' ],
+ 	SSL_cert_file => 'certs/examples.crt',
+ 	SSL_key_file => 'certs/examples.key',
+ 	on_stream => sub {
+ 		my $sock = shift;
+ 		print "Client connected to $sock, we're using " . $sock->write_handle->next_proto_negotiated . "\n";
+ 	},
+ 	on_ssl_error => sub { die "ssl error: @_"; },
+ 	on_connect_error => sub { die "conn error: @_"; },
+ 	on_resolve_error => sub { die "conn error: @_"; },
+ 	on_listen => sub {
+ 		my $sock = shift;
+ 		my $port = $sock->sockport;
+ 		print "Listening on port $port\n";
+ 		$loop->SSL_connect(
+ 			addr => {
+ 				family   => "inet",
+ 				socktype => "stream",
+ 				port     => $port,
+ 			},
+ 			SSL_npn_protocols => [ 'spdy/3', 'http1.1' ],
+ 			SSL_verify_mode => SSL_VERIFY_NONE,
+ 			on_connected => sub {
+ 				my $sock = shift;
+ 				print "Connected to $sock using " . $sock->next_proto_negotiated . "\n";
+ 				$loop->stop;
+ 			},
+ 			on_ssl_error => sub { die "ssl error: @_"; },
+ 			on_connect_error => sub { die "conn error: @_"; },
+ 			on_resolve_error => sub { die "conn error: @_"; },
+ 		);
+ 
+ 	},
+ );
+ $loop->run;
+
+Simple L<IO::Async>-based server which reports the originating request:
+
+ #!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+ # Set the PROTOCOL_SPDY_LISTEN_PORT env var if you want to listen on a specific port.
+ 
+ use Protocol::SPDY;
+ 
+ use HTTP::Request;
+ use HTTP::Response;
+ 
+ use IO::Socket::SSL qw(SSL_VERIFY_NONE);
+ use IO::Async::Loop;
+ use IO::Async::SSL;
+ use IO::Async::Stream;
+ 
+ my $loop = IO::Async::Loop->new;
+ $loop->SSL_listen(
+ 	addr => {
+ 		family   => "inet",
+ 		socktype => "stream",
+ 		port     => $ENV{PROTOCOL_SPDY_LISTEN_PORT} || 0,
+ 	},
+ 	SSL_npn_protocols => [
+ 		'spdy/3',
+ 		# Normally you'd also list HTTP here,
+ 		# but since we're only supporting SPDY
+ 		# in this example, we don't do that.
+ 		# 'http1.1'
+ 	],
+ 	SSL_cert_file => 'certs/examples.crt',
+ 	SSL_key_file => 'certs/examples.key',
+ 	SSL_ca_path => 'certs/ProtocolSPDYCA',
+ 	on_accept => sub {
+ 		my $sock = shift;
+ 		print "Client connecting from " . join(':', $sock->peerhost, $sock->peerport) . ", we're using " . $sock->next_proto_negotiated . "\n";
+ 		die "Wrong protocol" unless $sock->next_proto_negotiated eq 'spdy/3';
+ 		my $stream = IO::Async::Stream->new(handle => $sock);
+ 		my $spdy = Protocol::SPDY::Server->new;
+ 		# Pass all writes directly to the stream
+ 		$spdy->{on_write} = $stream->curry::write;
+ 		$spdy->subscribe_to_event(
+ 			stream => sub {
+ 				my $ev = shift;
+ 				my $stream = shift;
+ 				print "We have a new stream:\n";
+ 				$stream->closed->on_fail(sub {
+ 					warn "We had an error: " . shift;
+ 				});
+ 				my $hdr = { %{$stream->received_headers} };
+ 				my $req = HTTP::Request->new(
+ 					(delete $hdr->{':method'}) => (delete $hdr->{':path'})
+ 				);
+ 				$req->protocol(delete $hdr->{':version'});
+ 				my $scheme = delete $hdr->{':scheme'};
+ 				my $host = delete $hdr->{':host'};
+ 				$req->header('Host' => $host);
+ 				$req->header($_ => delete $hdr->{$_}) for keys %$hdr;
+ 				print $req->as_string("\n");
+ 
+ 				# You'd probably raise a 400 response here, but it's a conveniently
+ 				# easy way to demonstrate our reset handling
+ 				return $stream->reset(
+ 					'REFUSED'
+ 				) if $req->uri->path =~ qr{^/reset/refused};
+ 
+ 				my $response = HTTP::Response->new(
+ 					200 => 'OK', [
+ 						'Content-Type' => 'text/html; charset=UTF-8',
+ 					]
+ 				);
+ 				$response->protocol($req->protocol);
+ 
+ 				my $input = $req->as_string("\n");
+ 				my $output = <<"HTML";
+ <!DOCTYPE html>
+ <html>
+  <head>
+   <title>Example SPDY server</title>
+   <style type="text/css">
+ * { margin: 0; padding: 0 }
+ h1 { color: #ccc; background: #333 }
+ p { padding: 0.5em }
+   </style>
+  </head>
+  <body>
+   <h1>Protocol::SPDY example server</h1>
+   <p>
+    Your request was parsed as:
+   </p>
+   <pre>
+ $input
+   </pre>
+  </body>
+ </html>
+ HTML
+ 				# At the protocol level we only care about bytes. Make sure that's all we have.
+ 				$output = Encode::encode('UTF-8' => $output);
+ 				$response->header('Content-Length' => length $output);
+ 				my %hdr = map {; lc($_) => ''.$response->header($_) } $response->header_field_names;
+ 				delete @hdr{qw(connection keep-alive proxy-connection transfer-encoding)};
+ 				$stream->reply(
+ 					fin => 0,
+ 					headers => {
+ 						%hdr,
+ 						':status'  => join(' ', $response->code, $response->message),
+ 						':version' => $response->protocol,
+ 					}
+ 				);
+ 				$stream->send_data(substr $output, 0, 1024, '') while length $output;
+ 				$stream->send_data('', fin => 1);
+ 			}
+ 		);
+ 		$stream->configure(
+ 			on_read => sub {
+ 				my ( $self, $buffref, $eof ) = @_;
+ 				# Dump everything we have - could process in chunks if you
+ 				# want to be fair to other active sessions
+ 				$spdy->on_read(substr $$buffref, 0, length($$buffref), '');
+ 
+ 				if( $eof ) {
+ 					print "EOF\n";
+ 				}
+ 
+ 				return 0;
+ 			}
+ 		);
+ 		$loop->add($stream);
+ 	},
+ 	on_ssl_error => sub { die "ssl error: @_"; },
+ 	on_connect_error => sub { die "conn error: @_"; },
+ 	on_resolve_error => sub { die "resolve error: @_"; },
+ 	on_listen => sub {
+ 		my $sock = shift;
+ 		my $port = $sock->sockport;
+ 		print "Listening on port $port\n";
+ 	},
+ );
+ 
+ # Run until Ctrl-C or error
+ $loop->run;
+
+L<IO::Async>-based client for simple GET requests:
+
+ #!/usr/bin/env perl
+ use strict;
+ use warnings;
+ use 5.010;
+ #use Carp::Always;
+ 
+ # Usage: perl client-async.pl https://spdy-test.perlsite.co.uk/index.html
+ 
+ use Protocol::SPDY;
+ 
+ use HTTP::Request;
+ use HTTP::Response;
+ 
+ use IO::Socket::SSL qw(SSL_VERIFY_NONE);
+ use IO::Async::Loop;
+ use IO::Async::SSL;
+ use IO::Async::Stream;
+ use URI;
+ 
+ my $loop = IO::Async::Loop->new;
+ my $uri = URI->new(shift @ARGV or die 'no URL?');
+ warn $uri->host;
+ $loop->SSL_connect(
+ 	addr => {
+ 		family   => "inet",
+ 		socktype => "stream",
+ 		host     => $uri->host,
+ 		port     => $uri->port || 'https',
+ 	},
+ 	SSL_npn_protocols => [
+ 		'spdy/3',
+ 	],
+ 	SSL_verify_mode => SSL_VERIFY_NONE,
+ 	on_connected => sub {
+ 		my $sock = shift;
+ 		print "Connected to " . join(':', $sock->peerhost, $sock->peerport) . ", we're using " . $sock->next_proto_negotiated . "\n";
+ 		die "Wrong protocol" unless $sock->next_proto_negotiated eq 'spdy/3';
+ 		my $stream = IO::Async::Stream->new(handle => $sock);
+ 		my $spdy = Protocol::SPDY::Client->new;
+ 		# Pass all writes directly to the stream
+ 		$spdy->{on_write} = $stream->curry::write;
+ 		$stream->configure(
+ 			on_read => sub {
+ 				my ( $self, $buffref, $eof ) = @_;
+ 				# Dump everything we have - could process in chunks if you
+ 				# want to be fair to other active sessions
+ 				$spdy->on_read(substr $$buffref, 0, length($$buffref), '');
+ 
+ 				if( $eof ) {
+ 					print "EOF\n";
+ 				}
+ 
+ 				return 0;
+ 			}
+ 		);
+ 		my $req = $spdy->create_stream(
+ 		);
+ 		$req->subscribe_to_event(data => sub {
+ 			my ($ev, $data) = @_;
+ 			say $data;
+ 		});
+ 		$req->replied->on_done(sub {
+ 			my $hdr = $req->received_headers;
+ 			say join ' ', map delete $hdr->{$_}, qw(:version :status);
+ 			for(sort keys %$hdr) {
+ 				# Camel-Case the header names
+ 				(my $k = $_) =~ s{(?:^|-)\K(\w)}{\U$1}g;
+ 				say join ': ', $k, $hdr->{$_};
+ 			}
+ 			say '';
+ 			# We may get extra headers, stash them until after data
+ 			$req->subscribe_to_event(headers => sub {
+ 				my ($ev, $headers) = @_;
+ 				# ...
+ 			});
+ 		});
+ 		$req->remote_finished->on_done(sub { $loop->stop });
+ 		$req->start(
+ 			fin     => 1,
+ 			headers => {
+ 				':method'  => 'GET',
+ 				':path'    => '/' . $uri->path,
+ 				':scheme'  => $uri->scheme,
+ 				':host'    => $uri->host . ($uri->port ? ':' . $uri->port : ''),
+ 				':version' => 'HTTP/1.1',
+ 			}
+ 		);
+ 		$loop->add($stream);
+ 	},
+ 	on_ssl_error => sub { die "ssl error: @_"; },
+ 	on_connect_error => sub { die "conn error: @_"; },
+ 	on_resolve_error => sub { die "resolve error: @_"; },
+ 	on_listen => sub {
+ 		my $sock = shift;
+ 		my $port = $sock->sockport;
+ 		print "Listening on port $port\n";
+ 	},
+ );
+ 
+ # Run until Ctrl-C or error
+ $loop->run;
+
+Other examples are in the C<examples/> directory.
 
 =head1 SEE ALSO
 
 Since the protocol is still in flux, it may be advisable to keep an eye on
-L<http://www.chromium.org/spdy>.
+L<http://www.chromium.org/spdy>. The preliminary work on HTTP/2.0 protocol
+was at the time of writing also based on SPDY/3, so the IETF page is likely
+to be a useful resource: L<http://tools.ietf.org/wg/httpbis/>.
+
+The only other implementation I've seen so far for Perl is L<Net::SPDY>, which
+as of 0.01_5 is still a development release but does come with a client and
+server example which should make it easy to get started with.
 
 =head1 AUTHOR
 
@@ -438,4 +510,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2011-2012. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2011-2013. Licensed under the same terms as Perl itself.

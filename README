@@ -1,11 +1,11 @@
 
 
 This archive contains the distribution Protocol-SPDY,
-version 0.001:
+version 0.999_001:
 
   Support for the SPDY protocol
 
-This software is copyright (c) 2012 by Tom Molesworth.
+This software is copyright (c) 2011 by Tom Molesworth.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

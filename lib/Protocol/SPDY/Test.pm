@@ -1,6 +1,6 @@
 package Protocol::SPDY::Test;
 {
-  $Protocol::SPDY::Test::VERSION = '0.001';
+  $Protocol::SPDY::Test::VERSION = '0.999_001';
 }
 use strict;
 use warnings;
@@ -10,19 +10,38 @@ use Exporter qw(import);
 use Test::More;
 use Try::Tiny;
 
+=head1 NAME
+
+Protocol::SPDY::Test - helper functions for testing things
+
+=head1 VERSION
+
+version 0.999_001
+
+=head1 SYNOPSIS
+
+ use Protocol::SPDY::Test qw(:all);
+
+=head1 DESCRIPTION
+
+Provides a few functions that may help when trying to debug
+implementations. Not intended for use in production code.
+
+=cut
+
 our @EXPORT_OK = qw(control_frame_ok);
 our %EXPORT_TAGS = (
-	'all' => \@EXPORT_OK
+	all => \@EXPORT_OK
 );
 
 my %frame_test = (
-	SYN_STREAM() => sub {
+	SYN_STREAM => sub {
 		my $frame = shift;
 		my $spec = shift || {};
 		subtest "SYN_STREAM" => sub {
 			plan tests => 5 + keys %$spec;
 			try {
-				cmp_ok($frame->length, '>=', 12, 'length must be >= 12');
+				cmp_ok($frame->length, '>=', 10, 'length must be >= 12');
 				ok($frame->stream_id, 'have a stream identifier');
 				is($frame->stream_id, 0+$frame->stream_id, 'identifier is numeric');
 				cmp_ok($frame->priority, '>=', 0, 'priority >= 0');
@@ -54,20 +73,18 @@ Takes the following parameters:
 
 =cut
 
-sub control_frame_ok($$$) {
+sub control_frame_ok($;$$) {
 	my $frame = shift;
 	my $spec = shift || {};
 	my $msg = shift || '';
 	subtest "Frame validation - " . $msg => sub {
-		plan tests => 8;
 		try {
 			isa_ok($frame, 'Protocol::SPDY::Frame::Control');
-			can_ok($frame, qw(is_control is_data packet length type));
+			can_ok($frame, qw(is_control is_data length type));
 			ok($frame->is_control, 'is_control returns true');
 			ok(!$frame->is_data, 'is_data returns false');
-			is(join(' ', map sprintf('%02x', ord), split //, $frame->packet), join(' ', map sprintf('%02x', ord), split //, $frame->as_packet), 'cached packet matches generated');
-			cmp_ok($frame->length, '>', 0, 'length is nonzero');
-			ok(my $type = $frame->type, 'have a frame type');
+			cmp_ok($frame->length, '>=', 0, 'length is nonzero');
+			ok(my $type = $frame->type_string, 'have a frame type');
 			note 'type is ' . $type;
 			try {
 				$frame_test{$type}->($frame, $spec)
@@ -82,3 +99,13 @@ sub control_frame_ok($$$) {
 }
 
 1;
+
+__END__
+
+=head1 AUTHOR
+
+Tom Molesworth <cpan@entitymodel.com>
+
+=head1 LICENSE
+
+Copyright Tom Molesworth 2011-2013. Licensed under the same terms as Perl itself.

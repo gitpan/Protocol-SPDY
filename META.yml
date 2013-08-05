@@ -1,20 +1,33 @@
 ---
 abstract: 'Support for the SPDY protocol'
 author:
-  - 'Tom Molesworth <tom@entitymodel.com>'
+  - 'Tom Molesworth <cpan@entitymodel.com>'
 build_requires:
+  Capture::Tiny: 0
+  Digest::MD5: 0
+  Test::CheckDeps: 0.006
   Test::Fatal: 0.010
+  Test::HexString: 0
   Test::More: 0.98
+  Test::Refcount: 0
+  blib: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300009, CPAN::Meta::Converter version 2.120530'
+generated_by: 'Dist::Zilla version 4.300035, CPAN::Meta::Converter version 2.131560'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: Protocol-SPDY
 requires:
+  Future: 0.15
+  Mixin::Event::Dispatch: 1.000
   Try::Tiny: 0
+  curry: 0
   parent: 0
-version: 0.001
+  perl: 5.010
+resources:
+  bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=Protocol-SPDY
+  homepage: http://search.cpan.org/dist/Protocol-SPDY/
+version: 0.999_001
