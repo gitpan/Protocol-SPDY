@@ -1,6 +1,6 @@
 package Protocol::SPDY::Base;
 {
-  $Protocol::SPDY::Base::VERSION = '0.999_001';
+  $Protocol::SPDY::Base::VERSION = '0.999_002';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Base - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_001
+version 0.999_002
 
 =head1 DESCRIPTION
 

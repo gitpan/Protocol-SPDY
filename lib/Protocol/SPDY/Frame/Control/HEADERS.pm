@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::HEADERS;
 {
-  $Protocol::SPDY::Frame::Control::HEADERS::VERSION = '0.999_001';
+  $Protocol::SPDY::Frame::Control::HEADERS::VERSION = '0.999_002';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::HEADERS - header update packet
 
 =head1 VERSION
 
-version 0.999_001
+version 0.999_002
 
 =head1 SYNOPSIS
 

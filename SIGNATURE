@@ -14,15 +14,15 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 35b63962c5f34ca8c854de5fbea0f3b8bfe90ae7 Changes
+SHA1 eb0f80b62940a6ab1c3dde462ef01b604967723e Changes
 SHA1 fc28cb0d741d890ba998d8ab2b51b76c7499f361 INSTALL
 SHA1 fcecd203a27c044eb4138dc70de012aa384a2234 LICENSE
 SHA1 1b13ceab9346bc21609e32a79d10f856df434ef7 MANIFEST
-SHA1 3dccdcca31789b7e795b75e0124863e69052a86c META.json
-SHA1 f441d3ba1917fc8e1773208aaccc9f120956f8c0 META.yml
-SHA1 3a5d831b260cba1224d9a24511c65af62cbce3e6 Makefile.PL
-SHA1 5ba2114dd5c948c8b7f044fbac7af0bd999c544d README
-SHA1 ba64954d74f88ae994868066e339c984b0850de8 dist.ini
+SHA1 db0cab33f30643061dbaf519033f58d40ba08050 META.json
+SHA1 2b4be3d94a2d6accd05bf4f021c364e9e2a95e4b META.yml
+SHA1 9790797adc7f306ba29cf3735a6914f554e4503e Makefile.PL
+SHA1 f915165ee2e9a2d0560a96c21c4574d721553136 README
+SHA1 79edfbfbb48d730344c805735a429b9c1892bd29 dist.ini
 SHA1 1bb84956c1b78e253da529c342054bd41a25f6ec examples/certs/ProtocolSPDYCA/ca.db.certs/01.pem
 SHA1 7b005ce94fe68343b9162018338765b4269f8bc9 examples/certs/ProtocolSPDYCA/ca.db.index
 SHA1 8cf5465a17cdc7391f0f6bb01fa49399996c5217 examples/certs/ProtocolSPDYCA/ca.db.index.attr
@@ -45,47 +45,47 @@ SHA1 d5ea6fe81477d34c258e85bb69b80fd8f9c706e6 examples/server-async.pl
 SHA1 eed8f0df17b9e90d83162689e9f786cccd92a4c5 examples/server-basic.pl
 SHA1 209acaffb93316ffd8ddf5e5615ff653e6ff161d examples/server-push.pl
 SHA1 eed8f0df17b9e90d83162689e9f786cccd92a4c5 examples/server.pl
-SHA1 7eac613f0b7bd12fa556d93e437d44bdf59e6405 lib/Protocol/SPDY.pm
-SHA1 c2d66ca8aab1a7fa281254110e8338f93cabdea4 lib/Protocol/SPDY/Base.pm
-SHA1 c06f440137760176528d23f83fbdd77efbb474d9 lib/Protocol/SPDY/Base.pod
-SHA1 a6cce517b5a867235f0ae79c106f017a568985ee lib/Protocol/SPDY/Client.pm
-SHA1 82ac140a1b7331732d27f382d2da0e905caca41d lib/Protocol/SPDY/Client.pod
-SHA1 80de73659d1f0bd96036afaee8f590dc9f832c8c lib/Protocol/SPDY/Compress.pm
-SHA1 9f12760df4539cea60705d22bc478bd18dafe6b7 lib/Protocol/SPDY/Constants.pm
-SHA1 f62416ada6283a37f4e2ab464dca367a04e4678b lib/Protocol/SPDY/Constants.pod
-SHA1 6a57481afd8a57978ecd6bc5f7c176ecac7d8631 lib/Protocol/SPDY/Frame.pm
-SHA1 7a0d13ca5cca1afc26a07b72d66324964fc44916 lib/Protocol/SPDY/Frame/Control.pm
-SHA1 5956dc163a67a4276a22cf29bb522415bcedd384 lib/Protocol/SPDY/Frame/Control.pod
-SHA1 57c25784d4c63164b197183322cfd470d30c9f59 lib/Protocol/SPDY/Frame/Control/CREDENTIAL.pm
-SHA1 2682b02981c34b583b8232687f7dfd7a75f8d47e lib/Protocol/SPDY/Frame/Control/CREDENTIAL.pod
-SHA1 0fba51fdb3c425dd256739a132d423a848bc2dde lib/Protocol/SPDY/Frame/Control/GOAWAY.pm
-SHA1 e30fc814486f1319469c9a44f611ccc3fe5346dd lib/Protocol/SPDY/Frame/Control/GOAWAY.pod
-SHA1 065718b05619a8ca6ba7747fb0aacd00974d22d3 lib/Protocol/SPDY/Frame/Control/HEADERS.pm
-SHA1 8dac06bbdf376e76e3f4f3c60e08e8de3f12e7d5 lib/Protocol/SPDY/Frame/Control/HEADERS.pod
-SHA1 601e6404705c459b7ad50c93cfa671637648a51a lib/Protocol/SPDY/Frame/Control/PING.pm
-SHA1 0a49b3ed6cde829bfaf1d58c88c806e8a0a2aeab lib/Protocol/SPDY/Frame/Control/PING.pod
-SHA1 5ae47fdf59bcf1758aa28e4fea825140c05517f2 lib/Protocol/SPDY/Frame/Control/RST_STREAM.pm
-SHA1 e325332aec64950abfeee97523730fd07e4e1fa0 lib/Protocol/SPDY/Frame/Control/RST_STREAM.pod
-SHA1 49c5d98a8043cb6222d46d3ee8fd4b08bb4df886 lib/Protocol/SPDY/Frame/Control/SETTINGS.pm
-SHA1 dc975bb9a8ef2d9161536c5a432f6f3cc3e86283 lib/Protocol/SPDY/Frame/Control/SETTINGS.pod
-SHA1 e8ab9a2a2727a96b0aba9267bfefff4417423aeb lib/Protocol/SPDY/Frame/Control/SYN_REPLY.pm
-SHA1 74c1d4a30816c09d551cd41347a493582c332cae lib/Protocol/SPDY/Frame/Control/SYN_REPLY.pod
-SHA1 0d645229296d017e4d8b35d35c3fac4b9e6ccdb9 lib/Protocol/SPDY/Frame/Control/SYN_STREAM.pm
-SHA1 baaa77042deff3a14b97a0cbd0c20e9a2c50eac9 lib/Protocol/SPDY/Frame/Control/SYN_STREAM.pod
-SHA1 2f5461b191b13c8d1c8e9b8c0f2b519afda79b57 lib/Protocol/SPDY/Frame/Control/WINDOW_UPDATE.pm
-SHA1 a6f6804be5ed9cd1e3e52f514fb3f86f140bc862 lib/Protocol/SPDY/Frame/Control/WINDOW_UPDATE.pod
-SHA1 76f51ad630751ded65d8738bb9eb5b5a973dd5cb lib/Protocol/SPDY/Frame/Data.pm
-SHA1 9c9ccaba8862e549b770958bef5bfa5292917ffe lib/Protocol/SPDY/Frame/Data.pod
-SHA1 e4dea5518043d1e2a2f9369d537f290c86c31eb4 lib/Protocol/SPDY/Frame/HeaderSupport.pm
-SHA1 6db96d4f76ad561f6dd06476d87a0f73bd83de30 lib/Protocol/SPDY/Proxy.pm
-SHA1 d7dec198bdeaf2abe375c38d3cd66a27b775dbbe lib/Protocol/SPDY/Proxy.pod
-SHA1 1c2e3cbb31ac7ee2f47eaadf9328e7d289f35ff0 lib/Protocol/SPDY/Server.pm
-SHA1 c0429b5dc0eba81517b3e72ca74318971c567914 lib/Protocol/SPDY/Server.pod
-SHA1 27b299334b3939c34a72b69db0ae1177690d7946 lib/Protocol/SPDY/Stream.pm
-SHA1 edb2c53cb06399d63a2f82e11daf6a0b50230e4a lib/Protocol/SPDY/Stream.pod
-SHA1 e4e5d31b89a1b67dda7158196a030c3c46206618 lib/Protocol/SPDY/Test.pm
-SHA1 f76a8cae4cdf7715db0bb491dd33b22d9041c08c lib/Protocol/SPDY/Tracer.pm
-SHA1 ecf0e5f2f6293fcf62fe2e412d74cb3d825a1715 lib/Protocol/SPDY/Tracer.pod
+SHA1 3f7a3eca1fb9f2731b97cb92c9e0d42dc7d15ef1 lib/Protocol/SPDY.pm
+SHA1 6fc266b26e2c8d4999d4c3ee62730899f1cde31b lib/Protocol/SPDY/Base.pm
+SHA1 6ff7be9645d9d08eb08241706670d2243126897a lib/Protocol/SPDY/Base.pod
+SHA1 376d0fafe4d28b868c0be01744a2a39ba5449a1b lib/Protocol/SPDY/Client.pm
+SHA1 c7f82f2be78c0213776cc543ba55963457ef3fc7 lib/Protocol/SPDY/Client.pod
+SHA1 6236f5a38e2816c3a17f3661c73f35c60280d410 lib/Protocol/SPDY/Compress.pm
+SHA1 f25fbfbd359cde0d1df20af9c67848f409762e42 lib/Protocol/SPDY/Constants.pm
+SHA1 f980c3dea222d22feabec2f5aeddf2cead71bceb lib/Protocol/SPDY/Constants.pod
+SHA1 cf1f3ba0d9bc341c96bf4a4124d3b114b1204e7c lib/Protocol/SPDY/Frame.pm
+SHA1 4117c1d588ed6e69664862cd816f5f311a77dc8b lib/Protocol/SPDY/Frame/Control.pm
+SHA1 023115480b8fc294127e1f9a40b2f866c53dc15a lib/Protocol/SPDY/Frame/Control.pod
+SHA1 bc5d08e43df407ee536eb2bb29f040ee98204a9a lib/Protocol/SPDY/Frame/Control/CREDENTIAL.pm
+SHA1 35dbb0c955ab895b03c710db4e8ecf4fe651e67d lib/Protocol/SPDY/Frame/Control/CREDENTIAL.pod
+SHA1 ffcfd77123f0614bb10d8a709d24c1254cbb8dc9 lib/Protocol/SPDY/Frame/Control/GOAWAY.pm
+SHA1 6bc799a2fb428658db83b8491b568970b7aef1e9 lib/Protocol/SPDY/Frame/Control/GOAWAY.pod
+SHA1 e37203a3b5479a8960a7e847635cd946a3a3f2f5 lib/Protocol/SPDY/Frame/Control/HEADERS.pm
+SHA1 595cc5a7775e1eac9c9a14e5c7bf6c2820fd8d2d lib/Protocol/SPDY/Frame/Control/HEADERS.pod
+SHA1 29349c7f97a9f7fb1e8fe5b90b8c7a767ef5f5a0 lib/Protocol/SPDY/Frame/Control/PING.pm
+SHA1 5e01ec84b98dc2e1539bd66e366a2db927f715e1 lib/Protocol/SPDY/Frame/Control/PING.pod
+SHA1 3c0ca28c624abf9ed86307c365b651ee11122d50 lib/Protocol/SPDY/Frame/Control/RST_STREAM.pm
+SHA1 7b39669bef7a6ec0e3de0ff67d2685967527e44f lib/Protocol/SPDY/Frame/Control/RST_STREAM.pod
+SHA1 0276dcd5bf889df79b2b877265723d18f0dfcdf4 lib/Protocol/SPDY/Frame/Control/SETTINGS.pm
+SHA1 d63b197569d8ba5fce09965e421999da095dd312 lib/Protocol/SPDY/Frame/Control/SETTINGS.pod
+SHA1 a103fe51b4bbf7d8febde08137ba811ba7cd13fc lib/Protocol/SPDY/Frame/Control/SYN_REPLY.pm
+SHA1 62f2a8e4c6989047266757a0deefbf46a8f69a6c lib/Protocol/SPDY/Frame/Control/SYN_REPLY.pod
+SHA1 222fd0153352288a3c5021078143f894107ac9ff lib/Protocol/SPDY/Frame/Control/SYN_STREAM.pm
+SHA1 a0961bb1c5bcff04ea606a2c62b57bd82c3f1770 lib/Protocol/SPDY/Frame/Control/SYN_STREAM.pod
+SHA1 a4603601c024192f1fc7fbcd371b4eebc88ee144 lib/Protocol/SPDY/Frame/Control/WINDOW_UPDATE.pm
+SHA1 0db9290cb50d9ccc7b02a6ef560ae0a74ca17bf4 lib/Protocol/SPDY/Frame/Control/WINDOW_UPDATE.pod
+SHA1 8c2d363fae88c26acbb960eb6672e1a0dc94855c lib/Protocol/SPDY/Frame/Data.pm
+SHA1 1b1fefc472198fa471aaf5d3669b4ae39a1f5811 lib/Protocol/SPDY/Frame/Data.pod
+SHA1 34867c6a4cca4d67ac536a71be008af46ea21058 lib/Protocol/SPDY/Frame/HeaderSupport.pm
+SHA1 2d3675557ca3b82e6769327431721dcc6bb838fa lib/Protocol/SPDY/Proxy.pm
+SHA1 6396e4a1f90cfb90519b9a3d87fbf75fa0728aa6 lib/Protocol/SPDY/Proxy.pod
+SHA1 b1f5e1ba94592d54eb07fb793b2f43422b1611b2 lib/Protocol/SPDY/Server.pm
+SHA1 41b32043454b8d9b2c13b57cce8a2ce2d6c594a6 lib/Protocol/SPDY/Server.pod
+SHA1 a62442f5439ecf364ca7dbbf5dd1ce88a04ffb2a lib/Protocol/SPDY/Stream.pm
+SHA1 98561b7f1e792176564c3174698dd2862166861c lib/Protocol/SPDY/Stream.pod
+SHA1 370d7091ed9e1afd6288342750241a7aa57b2de2 lib/Protocol/SPDY/Test.pm
+SHA1 be7db919105a7dc0852493d361d76c74c6bcec80 lib/Protocol/SPDY/Tracer.pm
+SHA1 c4dc37719036fe3016b8c1ac4e3f5f2a4e2ec757 lib/Protocol/SPDY/Tracer.pod
 SHA1 90f75289c4dda63c94bc5e897f4996b15d9e42dd t/00-check-deps.t
 SHA1 20c8dbd2f5ce712165ade01a2e09d564ed9a2410 t/00-compile.t
 SHA1 76501878d9da34e0a7493b9c828900f4a8a18086 t/client.t
@@ -103,11 +103,11 @@ SHA1 ec3f84bfd7a9ce3246e7592f4134100c6b5ce02b xt/release/unused-vars.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (GNU/Linux)
 
-iQEcBAEBAgAGBQJR/ztwAAoJEFKElMNpjtyDXSQIALBSGA9giB0XqeAaFJsOLF8g
-sHmwCxpO34RZFJ5Lu2wz0VCI1uOyJgVQAcjK0Xln+OmkJO9ITAwFukf0hhSmbEFL
-z7Gd24JKd03A7L9g8V5QWliYIaMENht6tkWDufSCzZgxIsgmFMf0CwQ7yZFWDg49
-V5Tl/zimPT8LC6obcNzEU69w12KwZZqpySq1wuz0KGwEQe+g+ojZHtueKl+WoFBd
-8ycdy3M2Bs1kLCJekcor/ZwFKJG11xSdymi1yNJmyTXq0R7nZPnPfp5ESfO4LNJt
-WAyxquT7I10QTRxK3R3XAL8zsHyoPvv5OChFmjdoP6TE+ECcpkOlKn2yrOlttHU=
-=MIOm
+iQEcBAEBAgAGBQJSAHSzAAoJEFKElMNpjtyD9+IH/Rn1jgYkept3c9Zo0EA39aZB
+y+8z9tmb+rAZRt4b49Mom9R4QWUET+rV8ljz6q/uR2bcyLme17iPxIlNCICqBd7W
+KuUF1gwVhb/uOoBkm9R4Bmvaw/pp+bCxQsN7PZERPa79Yn4yCrEjCkDqAblbnPrW
+YQukN2EAcreGgCb7s5WMcdk2KJOSD5vcOwxkAVDAai2h2HzHrolNNXdtN9006CHw
+5jZXTtH91MKWNQ9wQlOmHyUCGotHb3EdNd2Fa2G8oGaiHC/hIrtD2+/WEEkytOpg
+AOhEz2CwbX+tN6zVa9EpZ2nzJoE/ZjKn3H+PuhpsiLmtyd+tl+hfalcS2HnRySY=
+=TEun
 -----END PGP SIGNATURE-----

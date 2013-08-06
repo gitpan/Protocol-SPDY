@@ -2,9 +2,9 @@
 use strict;
 use warnings;
 
-use 5.010;
+use 5.010001;
 
-use ExtUtils::MakeMaker 6.30;
+use ExtUtils::MakeMaker 6.48;
 
 
 
@@ -13,11 +13,12 @@ my %WriteMakefileArgs = (
   "AUTHOR" => "Tom Molesworth <cpan\@entitymodel.com>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
-    "ExtUtils::MakeMaker" => "6.30"
+    "ExtUtils::MakeMaker" => "6.48"
   },
   "DISTNAME" => "Protocol-SPDY",
   "EXE_FILES" => [],
   "LICENSE" => "perl",
+  "MIN_PERL_VERSION" => "5.010001",
   "NAME" => "Protocol::SPDY",
   "PREREQ_PM" => {
     "Future" => "0.15",
@@ -36,7 +37,7 @@ my %WriteMakefileArgs = (
     "Test::Refcount" => 0,
     "blib" => 0
   },
-  "VERSION" => "0.999_001",
+  "VERSION" => "0.999_002",
   "test" => {
     "TESTS" => "t/*.t"
   }

@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SYN_STREAM;
 {
-  $Protocol::SPDY::Frame::Control::SYN_STREAM::VERSION = '0.999_001';
+  $Protocol::SPDY::Frame::Control::SYN_STREAM::VERSION = '0.999_002';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::SYN_STREAM - stream creation request packet for 
 
 =head1 VERSION
 
-version 0.999_001
+version 0.999_002
 
 =head1 SYNOPSIS
 

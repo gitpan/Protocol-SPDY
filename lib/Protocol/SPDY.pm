@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = '0.999_001';
+our $VERSION = '0.999_002';
 
 =head1 NAME
 
@@ -12,7 +12,7 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_001
+version 0.999_002
 
 =head1 SYNOPSIS
 
