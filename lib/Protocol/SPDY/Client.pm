@@ -1,6 +1,6 @@
 package Protocol::SPDY::Client;
 {
-  $Protocol::SPDY::Client::VERSION = '0.999_002';
+  $Protocol::SPDY::Client::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,13 +12,15 @@ Protocol::SPDY::Client - client-side handling for SPDY sessions
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
  use Protocol::SPDY;
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 

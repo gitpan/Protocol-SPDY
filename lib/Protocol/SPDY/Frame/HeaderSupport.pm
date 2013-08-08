@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::HeaderSupport;
 {
-  $Protocol::SPDY::Frame::HeaderSupport::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::HeaderSupport::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ Protocol::SPDY::Frame::HeaderSupport - helper methods for frames which contain h
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
@@ -20,6 +20,9 @@ version 0.999_002
 The SYN_STREAM, SYN_REPLY and HEADERS frame types all use the same method for specifying
 HTTP-style headers. This class provides common methods for interacting with that header
 data.
+
+Mainly for internal use - see L<Protocol::SPDY> and L<Protocol::SPDY::Base>
+instead.
 
 =cut
 

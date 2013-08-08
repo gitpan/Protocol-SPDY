@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::RST_STREAM;
 {
-  $Protocol::SPDY::Frame::Control::RST_STREAM::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::Control::RST_STREAM::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,11 +12,13 @@ Protocol::SPDY::Frame::Control::RST_STREAM - stream reset
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 

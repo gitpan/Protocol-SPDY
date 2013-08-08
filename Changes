@@ -1,5 +1,26 @@
 Revision history for Protocol-SPDY
 
+0.999_003 2013-08-08 05:40:40 Europe/London
+	Features:
+	* Window update messages now handled by Protocol::SPDY::Stream,
+	rather than leaving the implementation to send them manually.
+	* Incoming settings frames are now applied
+	* restore_initial_settings method for sending persisted values
+
+	Bug fixes:
+	* Length calculation was incorrect, this could cause undef frames.
+	* ->headers method support in Protocol::SPDY::Stream, needed for
+	proper server push support
+	* ->window_update method support in Protocol::SPDY::Stream
+	* FIN would cause remote_finished Future to fire before the data
+	event was invoked
+
+	Build:
+	* Uses cpanfile for dependency tracking
+
+	Documentation:
+	* Mention some of the constants available in Protocol::SPDY::Constants
+
 0.999_002 2013-08-06 04:59:45 Europe/London
 	No functional changes
 

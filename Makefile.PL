@@ -34,10 +34,10 @@ my %WriteMakefileArgs = (
     "Test::Fatal" => "0.010",
     "Test::HexString" => 0,
     "Test::More" => "0.98",
-    "Test::Refcount" => 0,
+    "Test::Refcount" => "0.07",
     "blib" => 0
   },
-  "VERSION" => "0.999_002",
+  "VERSION" => "0.999_003",
   "test" => {
     "TESTS" => "t/*.t"
   }

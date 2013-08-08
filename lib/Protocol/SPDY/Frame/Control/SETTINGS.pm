@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SETTINGS;
 {
-  $Protocol::SPDY::Frame::Control::SETTINGS::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::Control::SETTINGS::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,11 +12,13 @@ Protocol::SPDY::Frame::Control::SETTINGS - connection settings information
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 
@@ -44,6 +46,16 @@ sub setting {
 	my ($v) = grep $_->[0] == $id, @{$self->{settings}};
 	$v->[2]
 }
+
+=head2 all_settings
+
+Returns a list of all settings:
+
+ [ id, flags, value ]
+
+=cut
+
+sub all_settings { @{shift->{settings}} }
 
 =head2 from_data
 
@@ -80,7 +92,9 @@ sub as_packet {
 	my $payload = pack 'N1', scalar @settings;
 	for (1..@settings) {
 		my $item = shift @settings;
-		$payload .= pack 'C1C1n1N1', $item->[1], ($item->[0] >> 16) & 0xFF, $item->[0] & 0xFFFF, $item->[2];
+		my $v = $item->[0] & 0x00FFFFFF;
+		$v ||= ($item->[1] & 0xFF) << 24;
+		$payload .= pack 'N1N1', $v, $item->[2];
 	}
 	return $self->SUPER::as_packet(
 		payload => $payload,

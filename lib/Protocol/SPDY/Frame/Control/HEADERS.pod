@@ -14,15 +14,21 @@ Protocol::SPDY::Frame::Control::HEADERS - header update packet
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
+
 =head2 type_name
 
 The string type for this frame ('HEADERS').
+
+=head2 new
+
+Instantiate.
 
 =head2 from_data
 
@@ -70,7 +76,7 @@ L<compress|Protocol::SPDY::Frame::Control/compress>, L<find_class_for_type|Proto
 
 =item L<Protocol::SPDY::Frame>
 
-L<< I<< E<98>E<111>E<111>E<108> overloading >>|Protocol::SPDY::Frame/I<< E<98>E<111>E<111>E<108> overloading >> >>, L<extract_frame|Protocol::SPDY::Frame/extract_frame>, L<extract_headers|Protocol::SPDY::Frame/extract_headers>, L<fin|Protocol::SPDY::Frame/fin>, L<length|Protocol::SPDY::Frame/length>, L<new|Protocol::SPDY::Frame/new>, L<parse|Protocol::SPDY::Frame/parse>, L<type_string|Protocol::SPDY::Frame/type_string>
+L<< I<< E<98>E<111>E<111>E<108> overloading >>|Protocol::SPDY::Frame/I<< E<98>E<111>E<111>E<108> overloading >> >>, L<extract_frame|Protocol::SPDY::Frame/extract_frame>, L<extract_headers|Protocol::SPDY::Frame/extract_headers>, L<fin|Protocol::SPDY::Frame/fin>, L<length|Protocol::SPDY::Frame/length>, L<parse|Protocol::SPDY::Frame/parse>, L<type_string|Protocol::SPDY::Frame/type_string>
 
 =back
 

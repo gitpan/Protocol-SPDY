@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::WINDOW_UPDATE;
 {
-  $Protocol::SPDY::Frame::Control::WINDOW_UPDATE::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::Control::WINDOW_UPDATE::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,11 +12,13 @@ Protocol::SPDY::Frame::Control::SynStream - stream creation request packet for S
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 
@@ -39,18 +41,14 @@ Instantiate from the given data.
 sub from_data {
 	my $class = shift;
 	my %args = @_;
-	my ($stream_id, $associated_stream_id, $slot) = unpack "N1N1n1", substr $args{data}, 0, 10, '';
-	$stream_id &= ~0x80000000;
-	$associated_stream_id &= ~0x80000000;
-	my $pri = ($slot & 0xE000) >> 13;
-	$slot &= 0xFF;
+	my ($stream_id, $window_delta) = unpack "N1N1", substr $args{data}, 0, 8, '';
+	$stream_id    &= ~0x80000000;
+	$window_delta &= ~0x80000000;
 
 	$class->new(
 		%args,
-		stream_id => $stream_id,
-		associated_stream_id => $associated_stream_id,
-		priority => $pri,
-		slot => $slot,
+		stream_id    => $stream_id,
+		window_delta => $window_delta,
 	);
 }
 
@@ -62,6 +60,28 @@ Which stream we're updating the window for.
 
 sub stream_id { shift->{stream_id} }
 
+=head2 window_delta
+
+Change in window size (always positive).
+
+=cut
+
+sub window_delta { shift->{window_delta} }
+
+=head2 as_packet
+
+Returns byte representation for this frame.
+
+=cut
+
+sub as_packet {
+	my $self = shift;
+	my $payload = pack 'N1N1', $self->stream_id & ~0x80000000, $self->window_delta & ~0x80000000;
+	return $self->SUPER::as_packet(
+		payload => $payload,
+	);
+}
+
 =head2 to_string
 
 String representation, for debugging.
@@ -70,7 +90,7 @@ String representation, for debugging.
 
 sub to_string {
 	my $self = shift;
-	$self->SUPER::to_string . ', ' . join ',', map { $_ . '=' . $self->header($_) } sort keys %{$self->{headers}};
+	$self->SUPER::to_string . ', stream ' . $self->stream_id . ', delta ' . $self->window_delta;
 }
 
 1;

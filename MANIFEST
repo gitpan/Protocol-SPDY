@@ -7,6 +7,7 @@ META.yml
 Makefile.PL
 README
 SIGNATURE
+cpanfile
 dist.ini
 examples/certs/ProtocolSPDYCA/ca.db.certs/01.pem
 examples/certs/ProtocolSPDYCA/ca.db.index

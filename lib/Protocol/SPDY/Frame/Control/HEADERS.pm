@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::HEADERS;
 {
-  $Protocol::SPDY::Frame::Control::HEADERS::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::Control::HEADERS::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,11 +12,13 @@ Protocol::SPDY::Frame::Control::HEADERS - header update packet
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 
@@ -31,6 +33,19 @@ The string type for this frame ('HEADERS').
 =cut
 
 sub type_name { 'HEADERS' }
+
+=head2 new
+
+Instantiate.
+
+=cut
+
+sub new {
+	my $class = shift;
+	my %args = @_;
+	$args{headers} = $class->header_hashref_to_arrayref($args{headers}) if (ref($args{headers}) || '') eq 'HASH';
+	$class->SUPER::new(%args)
+}
 
 =head2 from_data
 
@@ -87,7 +102,7 @@ String representation, for debugging.
 
 sub to_string {
 	my $self = shift;
-	$self->SUPER::to_string . ', ' . join ',', map { $_ . '=' . $self->header($_) } sort @{$self->{headers}};
+	$self->SUPER::to_string . ', id=' . $self->stream_id . ', ' . $self->header_line;
 }
 
 1;

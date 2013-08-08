@@ -14,7 +14,7 @@ Protocol::SPDY::Base - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 DESCRIPTION
 
@@ -39,6 +39,12 @@ Compression instance used for receiving (decompressing) data.
 =head2 request_close
 
 Issue a close request by sending a GOAWAY message.
+
+=head2 restore_initial_settings
+
+Send back the list of settings we'd previously persisted.
+
+Typically called immediately after establishing the connection.
 
 =head2 check_version
 
@@ -66,6 +72,11 @@ passing data to this method.
 
 Will call L</dispatch_frame> for any valid frames that can be
 extracted from the stream.
+
+=head2 batch
+
+Future representing the current batch of frames being processed. Used
+for deferring window updates.
 
 =head2 prioritise_incoming_frames
 
@@ -96,8 +107,6 @@ does not have a stream_id.
 =head2 apply_settings
 
 Applies the given settings to our internal state.
-
-B< Note >: Not yet implemented
 
 =head2 extract_frame
 
@@ -155,6 +164,38 @@ provided L<Protocol::SPDY::Stream> instance.
 =head2 stream_by_id
 
 Returns the L<Protocol::SPDY::Stream> matching the given ID.
+
+=head2 expected_upload_bandwidth
+
+The expected rate (kilobyte/sec) we can send data to the other side.
+
+=head2 expected_download_bandwidth
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 expected_round_trip_time
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 max_concurrent_streams
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 current_cwnd
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 download_retrans_rate
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 initial_window_size
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head2 client_certificate_vector_size
+
+The rate (kilobyte/sec) we expect to be able to receive data from the other side.
 
 =head1 INHERITED METHODS
 

@@ -14,7 +14,7 @@ Protocol::SPDY::Stream - single stream representation within a L<Protocol::SPDY>
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
@@ -115,7 +115,8 @@ The server can push additional streams to the client to avoid the unnecessary
 extra SYN_STREAM request/response cycle for additional resources that the server
 knows will be needed to fulfull the main request.
 
-A server push response is requested with L</push_stream>:
+A server push response is requested with L</push_stream> - this example involves
+a single associated stream:
 
  try {
    my $assoc = $stream->push_stream;
@@ -153,7 +154,8 @@ Generally it's safest to create all the associated streams immediately
 after the initial SYN_STREAM request has been received from the client,
 since that will pass enough information back that the client will know
 how to start arranging the responses for caching. You should then be
-able to send data on the streams as and when it becomes available.
+able to send data on the streams as and when it becomes available. The
+L<Future> C<needs_all> method may be useful here.
 
 Attempting to initiate server-pushed streams after sending content is
 liable to hit race conditions - see section 3.3.1 in the SPDY spec.
@@ -233,6 +235,14 @@ Returns the hashref of all received headers.
 =head2 handle_frame
 
 Attempt to handle the given frame.
+
+=head2 send_window_update
+
+Send out any pending window updates.
+
+=head2 queue_window_update
+
+Request a window update due to data frame processing.
 
 =head2 queue_frame
 

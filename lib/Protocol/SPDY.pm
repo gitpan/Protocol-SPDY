@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = '0.999_002';
+our $VERSION = '0.999_003';
 
 =head1 NAME
 
@@ -12,7 +12,7 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
@@ -83,7 +83,6 @@ see L<#74387|https://rt.cpan.org/Ticket/Display.html?id=74387> for progress on t
 
 Eventually L<POE> or L<Reflex> implementations may arrive, if someone more familiar
 with those frameworks takes an interest.
-
 
 On the server side, it should be possible to incorporate this as a plugin for
 Plack/PSGI so that any PSGI-compatible web application can support basic SPDY

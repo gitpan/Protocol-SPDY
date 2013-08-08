@@ -14,11 +14,13 @@ Protocol::SPDY::Frame::Control::SynStream - stream creation request packet for S
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =head2 type_name
 
@@ -31,6 +33,14 @@ Instantiate from the given data.
 =head2 stream_id
 
 Which stream we're updating the window for.
+
+=head2 window_delta
+
+Change in window size (always positive).
+
+=head2 as_packet
+
+Returns byte representation for this frame.
 
 =head2 to_string
 
@@ -58,7 +68,7 @@ Further documentation can be found in the following modules:
 
 =item L<Protocol::SPDY::Frame::Control>
 
-L<as_packet|Protocol::SPDY::Frame::Control/as_packet>, L<compress|Protocol::SPDY::Frame::Control/compress>, L<find_class_for_type|Protocol::SPDY::Frame::Control/find_class_for_type>, L<is_control|Protocol::SPDY::Frame::Control/is_control>, L<is_data|Protocol::SPDY::Frame::Control/is_data>, L<pairs_to_nv_header|Protocol::SPDY::Frame::Control/pairs_to_nv_header>, L<type|Protocol::SPDY::Frame::Control/type>, L<uni|Protocol::SPDY::Frame::Control/uni>, L<version|Protocol::SPDY::Frame::Control/version>
+L<compress|Protocol::SPDY::Frame::Control/compress>, L<find_class_for_type|Protocol::SPDY::Frame::Control/find_class_for_type>, L<is_control|Protocol::SPDY::Frame::Control/is_control>, L<is_data|Protocol::SPDY::Frame::Control/is_data>, L<pairs_to_nv_header|Protocol::SPDY::Frame::Control/pairs_to_nv_header>, L<type|Protocol::SPDY::Frame::Control/type>, L<uni|Protocol::SPDY::Frame::Control/uni>, L<version|Protocol::SPDY::Frame::Control/version>
 
 =item L<Protocol::SPDY::Frame>
 

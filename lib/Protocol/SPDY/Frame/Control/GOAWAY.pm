@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::GOAWAY;
 {
-  $Protocol::SPDY::Frame::Control::GOAWAY::VERSION = '0.999_002';
+  $Protocol::SPDY::Frame::Control::GOAWAY::VERSION = '0.999_003';
 }
 use strict;
 use warnings;
@@ -12,13 +12,15 @@ Protocol::SPDY::Frame::Control::GOAWAY - connection termination request
 
 =head1 VERSION
 
-version 0.999_002
+version 0.999_003
 
 =head1 SYNOPSIS
 
  use Protocol::SPDY;
 
 =head1 DESCRIPTION
+
+See L<Protocol::SPDY> and L<Protocol::SPDY::Base>.
 
 =cut
 
