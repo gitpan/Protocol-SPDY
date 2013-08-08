@@ -20,6 +20,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "MIN_PERL_VERSION" => "5.010001",
   "NAME" => "Protocol::SPDY",
+  "PREREQ_FATAL" => 1,
   "PREREQ_PM" => {
     "Future" => "0.15",
     "Mixin::Event::Dispatch" => "1.000",
@@ -37,7 +38,7 @@ my %WriteMakefileArgs = (
     "Test::Refcount" => "0.07",
     "blib" => 0
   },
-  "VERSION" => "0.999_003",
+  "VERSION" => "0.999_004",
   "test" => {
     "TESTS" => "t/*.t"
   }

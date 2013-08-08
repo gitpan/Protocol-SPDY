@@ -14,7 +14,7 @@ Protocol::SPDY::Base - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 DESCRIPTION
 
@@ -45,6 +45,20 @@ Issue a close request by sending a GOAWAY message.
 Send back the list of settings we'd previously persisted.
 
 Typically called immediately after establishing the connection.
+
+=head2 send_settings
+
+Sends a SETTINGS frame generated from the key/value pairs passed
+to this method.
+
+Typically called immediately after establishing the connection.
+
+Example:
+
+ $spdy->send_settings(
+   initial_window_size    => 32768,
+   max_concurrent_streams => 16,
+ );
 
 =head2 check_version
 

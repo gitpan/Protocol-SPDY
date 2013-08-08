@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Data;
 {
-  $Protocol::SPDY::Frame::Data::VERSION = '0.999_003';
+  $Protocol::SPDY::Frame::Data::VERSION = '0.999_004';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Data - data frame support
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 DESCRIPTION
 
@@ -99,6 +99,17 @@ that isn't going to conflict with any control frame types.
 =cut
 
 sub type_name { 'data' }
+
+=head2 to_string
+
+String representation, for debugging.
+
+=cut
+
+sub to_string {
+	my $self = shift;
+	$self->SUPER::to_string . ', stream=' . $self->stream_id . ', payload ' . length($self->payload) . " bytes";
+}
 
 1;
 

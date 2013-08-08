@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SYN_REPLY;
 {
-  $Protocol::SPDY::Frame::Control::SYN_REPLY::VERSION = '0.999_003';
+  $Protocol::SPDY::Frame::Control::SYN_REPLY::VERSION = '0.999_004';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::SYN_REPLY - response to a SYN_STREAM
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 SYNOPSIS
 

@@ -14,7 +14,7 @@ Protocol::SPDY::Frame::Data - data frame support
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 DESCRIPTION
 
@@ -50,13 +50,17 @@ that isn't going to conflict with any control frame types.
 Returns 'data' - data frames don't have a type field, so we pick a value
 that isn't going to conflict with any control frame types.
 
+=head2 to_string
+
+String representation, for debugging.
+
 =head1 INHERITED METHODS
 
 =over 4
 
 =item L<Protocol::SPDY::Frame>
 
-L<< I<< E<98>E<111>E<111>E<108> overloading >>|Protocol::SPDY::Frame/I<< E<98>E<111>E<111>E<108> overloading >> >>, L<extract_frame|Protocol::SPDY::Frame/extract_frame>, L<extract_headers|Protocol::SPDY::Frame/extract_headers>, L<fin|Protocol::SPDY::Frame/fin>, L<is_control|Protocol::SPDY::Frame/is_control>, L<is_data|Protocol::SPDY::Frame/is_data>, L<length|Protocol::SPDY::Frame/length>, L<new|Protocol::SPDY::Frame/new>, L<parse|Protocol::SPDY::Frame/parse>, L<to_string|Protocol::SPDY::Frame/to_string>, L<type|Protocol::SPDY::Frame/type>, L<version|Protocol::SPDY::Frame/version>
+L<< I<< E<98>E<111>E<111>E<108> overloading >>|Protocol::SPDY::Frame/I<< E<98>E<111>E<111>E<108> overloading >> >>, L<extract_frame|Protocol::SPDY::Frame/extract_frame>, L<extract_headers|Protocol::SPDY::Frame/extract_headers>, L<fin|Protocol::SPDY::Frame/fin>, L<is_control|Protocol::SPDY::Frame/is_control>, L<is_data|Protocol::SPDY::Frame/is_data>, L<length|Protocol::SPDY::Frame/length>, L<new|Protocol::SPDY::Frame/new>, L<parse|Protocol::SPDY::Frame/parse>, L<type|Protocol::SPDY::Frame/type>, L<version|Protocol::SPDY::Frame/version>
 
 =back
 

@@ -1,6 +1,6 @@
 package Protocol::SPDY::Proxy;
 {
-  $Protocol::SPDY::Proxy::VERSION = '0.999_003';
+  $Protocol::SPDY::Proxy::VERSION = '0.999_004';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Proxy - act as a proxy between SPDY sessions
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 SYNOPSIS
 

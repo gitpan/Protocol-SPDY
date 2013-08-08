@@ -14,7 +14,7 @@ Protocol::SPDY::Frame::Control::SETTINGS - connection settings information
 
 =head1 VERSION
 
-version 0.999_003
+version 0.999_004
 
 =head1 SYNOPSIS
 

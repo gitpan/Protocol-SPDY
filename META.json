@@ -4,7 +4,7 @@
       "Tom Molesworth <cpan@entitymodel.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300035, CPAN::Meta::Converter version 2.131560",
+   "generated_by" : "Dist::Zilla version 4.300036, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "perl_5"
    ],
@@ -61,6 +61,6 @@
       },
       "homepage" : "http://search.cpan.org/dist/Protocol-SPDY/"
    },
-   "version" : "0.999_003"
+   "version" : "0.999_004"
 }
 
