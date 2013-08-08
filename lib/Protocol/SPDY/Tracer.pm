@@ -1,6 +1,6 @@
 package Protocol::SPDY::Tracer;
 {
-  $Protocol::SPDY::Tracer::VERSION = '0.999_004';
+  $Protocol::SPDY::Tracer::VERSION = '0.999_005';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Tracer - helper class for tracing SPDY sessions
 
 =head1 VERSION
 
-version 0.999_004
+version 0.999_005
 
 =head1 SYNOPSIS
 

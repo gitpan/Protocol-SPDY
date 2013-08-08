@@ -14,7 +14,7 @@ Protocol::SPDY::Frame::Control::RST_STREAM - stream reset
 
 =head1 VERSION
 
-version 0.999_004
+version 0.999_005
 
 =head1 SYNOPSIS
 
