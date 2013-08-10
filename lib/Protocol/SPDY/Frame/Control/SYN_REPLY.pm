@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SYN_REPLY;
 {
-  $Protocol::SPDY::Frame::Control::SYN_REPLY::VERSION = '0.999_005';
+  $Protocol::SPDY::Frame::Control::SYN_REPLY::VERSION = '0.999_006';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::SYN_REPLY - response to a SYN_STREAM
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 
@@ -128,4 +128,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2011-2012. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2011-2013. Licensed under the same terms as Perl itself.

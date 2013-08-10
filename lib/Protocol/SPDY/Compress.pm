@@ -1,6 +1,6 @@
 package Protocol::SPDY::Compress;
 {
-  $Protocol::SPDY::Compress::VERSION = '0.999_005';
+  $Protocol::SPDY::Compress::VERSION = '0.999_006';
 }
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ Protocol::SPDY::Compress - handle zlib compression/decompression
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 

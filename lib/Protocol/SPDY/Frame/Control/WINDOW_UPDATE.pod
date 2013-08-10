@@ -14,7 +14,7 @@ Protocol::SPDY::Frame::Control::SynStream - stream creation request packet for S
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 
@@ -82,4 +82,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2011-2012. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2011-2013. Licensed under the same terms as Perl itself.

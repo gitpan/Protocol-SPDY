@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::HeaderSupport;
 {
-  $Protocol::SPDY::Frame::HeaderSupport::VERSION = '0.999_005';
+  $Protocol::SPDY::Frame::HeaderSupport::VERSION = '0.999_006';
 }
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ Protocol::SPDY::Frame::HeaderSupport - helper methods for frames which contain h
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 

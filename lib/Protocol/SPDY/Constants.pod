@@ -14,7 +14,7 @@ Protocol::SPDY::Constants - constant definitions for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 

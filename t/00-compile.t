@@ -25,10 +25,11 @@ Protocol/SPDY/Frame/Control/RST_STREAM.pm
 Protocol/SPDY/Frame/Control/SETTINGS.pm
 Protocol/SPDY/Frame/Control/SYN_REPLY.pm
 Protocol/SPDY/Frame/Control/SYN_STREAM.pm
+Protocol/SPDY/Frame/Control/SynReply.pm
+Protocol/SPDY/Frame/Control/SynStream.pm
 Protocol/SPDY/Frame/Control/WINDOW_UPDATE.pm
 Protocol/SPDY/Frame/Data.pm
 Protocol/SPDY/Frame/HeaderSupport.pm
-Protocol/SPDY/Proxy.pm
 Protocol/SPDY/Server.pm
 Protocol/SPDY/Stream.pm
 Protocol/SPDY/Test.pm

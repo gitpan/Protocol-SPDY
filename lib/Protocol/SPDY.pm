@@ -3,7 +3,7 @@ package Protocol::SPDY;
 use strict;
 use warnings;
 
-our $VERSION = '0.999_005';
+our $VERSION = '0.999_006';
 
 =head1 NAME
 
@@ -11,7 +11,7 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 
@@ -52,7 +52,6 @@ use Protocol::SPDY::Stream;
 use Protocol::SPDY::Server;
 use Protocol::SPDY::Client;
 use Protocol::SPDY::Tracer;
-use Protocol::SPDY::Proxy;
 
 1;
 
@@ -116,7 +115,7 @@ header:
 
 For example:
 
- Alternate-Protocol: 2443:spdy/2
+ Alternate-Protocol: 2443:spdy/3
 
 This applies both to HTTP and HTTPS.
 
@@ -124,12 +123,12 @@ If the browser is already connected to the server using TLS, the TLS/NPN mechani
 be used to indicate that SPDY is available. Currently this requires openssl-1.1 or later,
 although the NPN extension should be simple enough to backport if needed (see
 L<http://www.ietf.org/id/draft-agl-tls-nextprotoneg-00.txt> for details). Since the
-port is already connected, only the <protocol> part is required ('spdy/2' or 'spdy/3')
+port is already connected, only the <protocol> part is required ('spdy/3')
 when sending via TLS/NPN.
 
 This information could also be provided via the Alternate-Protocol header:
 
- Alternate-Protocol: 2443:spdy/2,443:npn-spdy/2,443:npn-spdy/3
+ Alternate-Protocol: 2443:spdy/3,443:npn-spdy/3
 
 =head2 PACKET SEQUENCE
 
@@ -240,6 +239,23 @@ SSL/TLS next protocol negotiation for SPDY/3 with HTTP/1.1 fallback:
  	},
  );
  $loop->run;
+
+Show frames (one per line) from traffic capture (note that this needs to be
+post-TLS decryption, without any TCP/IP headers):
+
+ #!/usr/bin/env perl
+ use strict;
+ use warnings;
+ use Protocol::SPDY;
+ 
+ my $spdy = Protocol::SPDY::Tracer->new;
+ $spdy->subscribe_to_event(
+ 	receive_frame => sub { print $_[1] . "\n" }
+ );
+ local $/ = \1024;
+ while(<>) {
+ 	$spdy->on_read($_);
+ }
 
 Simple L<IO::Async>-based server which reports the originating request:
 

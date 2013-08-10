@@ -30,4 +30,4 @@ requires:
 resources:
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=Protocol-SPDY
   homepage: http://search.cpan.org/dist/Protocol-SPDY/
-version: 0.999_005
+version: 0.999_006

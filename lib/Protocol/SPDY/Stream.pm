@@ -1,6 +1,6 @@
 package Protocol::SPDY::Stream;
 {
-  $Protocol::SPDY::Stream::VERSION = '0.999_005';
+  $Protocol::SPDY::Stream::VERSION = '0.999_006';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Stream - single stream representation within a L<Protocol::SPDY>
 
 =head1 VERSION
 
-version 0.999_005
+version 0.999_006
 
 =head1 SYNOPSIS
 
@@ -233,6 +233,7 @@ sub new_from_syn {
 		# side, this means it's server-push stream.
 		$self->{associated_stream_id} = $parent_id;
 		die "not unidirectional?" unless $frame->uni;
+		die "no associated stream for $parent_id on " . $self->id unless $self->associated_stream;
 		$self->associated_stream->invoke_event(push => $self);
 		$self->accepted->done;
 	}
@@ -370,8 +371,9 @@ sub handle_frame {
 		$self->invoke_event(data => $frame->payload);
 		$self->queue_window_update($len);
 	} elsif($frame->type_name eq 'WINDOW_UPDATE') {
-		$self->{transfer_window} += $frame->window_delta;
-		warn "We had a window update, window size now " . $self->transfer_window;
+		my $delta = $frame->window_delta;
+		$self->{transfer_window} += $delta;
+		$self->invoke_event(transfer_window => $self->transfer_window, $delta);
 	} elsif($frame->type_name eq 'RST_STREAM') {
 		return $self->accepted->fail($frame->status_code_as_text) if $self->from_us;
 		$self->closed->fail($frame->status_code_as_text);
