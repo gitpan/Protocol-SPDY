@@ -1,6 +1,6 @@
 package Protocol::SPDY::Base;
 {
-  $Protocol::SPDY::Base::VERSION = '0.999_006';
+  $Protocol::SPDY::Base::VERSION = '0.999_007';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Base - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 DESCRIPTION
 
@@ -196,6 +196,7 @@ sub queue_frame {
 	$self->write($frame->as_packet($self->sender_zlib));
 }
 
+
 =head2 on_read
 
 This is the method that an external transport would call when it has
@@ -227,15 +228,6 @@ sub on_read {
 	$self->batch->done if exists $self->{batch};
 	$self
 }
-
-=head2 batch
-
-Future representing the current batch of frames being processed. Used
-for deferring window updates.
-
-=cut
-
-sub batch { shift->{batch} ||= Future->new }
 
 =head2 prioritise_incoming_frames
 
@@ -281,9 +273,25 @@ sub dispatch_frame {
 		} elsif($frame->type_name eq 'SETTINGS') {
 			$self->apply_settings($frame);
 		} else {
-			die "We do not know what to do with $frame yet";
+			# Give subclasses a chance to try this one
+			return $self->dispatch_unhandled_frame($frame);
 		}
 	}
+	return $self;
+}
+
+=head2 dispatch_unhandled_frame
+
+Called when we receive a frame that's not been picked up by the
+usual handlers - could be a SYN_REPLY on a stream that we don't
+have, for example.
+
+=cut
+
+sub dispatch_unhandled_frame {
+	my $self = shift;
+	my $frame = shift;
+	die "We do not know what to do with $frame yet";
 }
 
 =head2 incoming_stream
@@ -336,8 +344,8 @@ sub apply_settings {
 	foreach my $setting ($frame->all_settings) {
 		my ($id, $flags, $value) = @$setting;
 		my $k = lc(SETTINGS_BY_ID->{$id}) or die 'unknown setting ' . $id;
-		$self->{$k} = $value;
 		$self->invoke_event(setting => $k => $value, $flags);
+		$self->{$k} = $value;
 	}
 	$self
 }
@@ -592,9 +600,56 @@ The rate (kilobyte/sec) we expect to be able to receive data from the other side
 
 sub client_certificate_vector_size { shift->{client_certificate_vector_size} }
 
+=head1 METHODS - Futures
+
+=head2 batch
+
+Future representing the current batch of frames being processed. Used
+for deferring window updates.
+
+=cut
+
+sub batch { shift->{batch} ||= Future->new }
+
 1;
 
 __END__
+
+=head1 EVENTS
+
+The following events may be raised by this class - use
+L<Mixin::Event::Dispatch/subscribe_to_event> to watch for them:
+
+ $spdy->subscribe_to_event(
+   send_frame => sub {
+     my ($ev, $frame) = @_;
+	 print "Send: $frame\n";
+	 $ev->unsubscribe if $frame->type_name eq 'GOAWAY';
+   }
+ );
+
+=head2 send_frame event
+
+Called with the L<Protocol::SPDY::Frame> instance just before we attempt to send
+a frame to the other side.
+
+=head2 receive_frame event
+
+Called with the L<Protocol::SPDY::Frame> instance just before we attempt to process
+a frame received from the other side.
+
+=head2 ping event
+
+Called when we have received a PING request, just before we send back the reply.
+
+=head2 stream event
+
+Called after we have created a new stream in response to an incoming packet.
+
+=head2 setting event
+
+Called for each new SETTINGS entry received from the other side, just before
+we have applied the value locally.
 
 =head1 AUTHOR
 

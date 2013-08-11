@@ -1,6 +1,6 @@
 package Protocol::SPDY::Tracer;
 {
-  $Protocol::SPDY::Tracer::VERSION = '0.999_006';
+  $Protocol::SPDY::Tracer::VERSION = '0.999_007';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Tracer - helper class for tracing SPDY sessions
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 SYNOPSIS
 
@@ -43,6 +43,22 @@ sub control_frame_bytes {
 		@$args,
 	)->as_packet($self->sender_zlib)
 }
+
+=head2 dispatch_unhandled_frame
+
+Ignore unhandled frames.
+
+=cut
+
+sub dispatch_unhandled_frame { }
+
+=head2 write
+
+Write requests are always ignored here.
+
+=cut
+
+sub write { }
 
 1;
 

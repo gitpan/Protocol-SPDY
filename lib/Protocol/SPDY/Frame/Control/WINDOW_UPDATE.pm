@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::WINDOW_UPDATE;
 {
-  $Protocol::SPDY::Frame::Control::WINDOW_UPDATE::VERSION = '0.999_006';
+  $Protocol::SPDY::Frame::Control::WINDOW_UPDATE::VERSION = '0.999_007';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::SynStream - stream creation request packet for S
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 SYNOPSIS
 

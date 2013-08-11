@@ -25,6 +25,7 @@ examples/client.pl
 examples/dumper.pl
 examples/npn.pl
 examples/server-async.pl
+examples/server-basic-async.pl
 examples/server-basic.pl
 examples/server.pl
 lib/Protocol/SPDY.pm

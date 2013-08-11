@@ -14,7 +14,7 @@ Protocol::SPDY::Base - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 DESCRIPTION
 
@@ -87,11 +87,6 @@ passing data to this method.
 Will call L</dispatch_frame> for any valid frames that can be
 extracted from the stream.
 
-=head2 batch
-
-Future representing the current batch of frames being processed. Used
-for deferring window updates.
-
 =head2 prioritise_incoming_frames
 
 Given a list of L<Protocol::SPDY::Frame> instances, returns them
@@ -105,6 +100,12 @@ Does not yet support stream priority.
 Dispatches the given frame to appropriate handlers - this will
 be the matching L<Protocol::SPDY::Stream> if one exists, or
 internal connection state handling for GOAWAY/SETTINGS frames.
+
+=head2 dispatch_unhandled_frame
+
+Called when we receive a frame that's not been picked up by the
+usual handlers - could be a SYN_REPLY on a stream that we don't
+have, for example.
 
 =head2 incoming_stream
 
@@ -210,6 +211,49 @@ The rate (kilobyte/sec) we expect to be able to receive data from the other side
 =head2 client_certificate_vector_size
 
 The rate (kilobyte/sec) we expect to be able to receive data from the other side.
+
+=head1 METHODS - Futures
+
+=head2 batch
+
+Future representing the current batch of frames being processed. Used
+for deferring window updates.
+
+=head1 EVENTS
+
+The following events may be raised by this class - use
+L<Mixin::Event::Dispatch/subscribe_to_event> to watch for them:
+
+ $spdy->subscribe_to_event(
+   send_frame => sub {
+     my ($ev, $frame) = @_;
+	 print "Send: $frame\n";
+	 $ev->unsubscribe if $frame->type_name eq 'GOAWAY';
+   }
+ );
+
+=head2 send_frame event
+
+Called with the L<Protocol::SPDY::Frame> instance just before we attempt to send
+a frame to the other side.
+
+=head2 receive_frame event
+
+Called with the L<Protocol::SPDY::Frame> instance just before we attempt to process
+a frame received from the other side.
+
+=head2 ping event
+
+Called when we have received a PING request, just before we send back the reply.
+
+=head2 stream event
+
+Called after we have created a new stream in response to an incoming packet.
+
+=head2 setting event
+
+Called for each new SETTINGS entry received from the other side, just before
+we have applied the value locally.
 
 =head1 INHERITED METHODS
 

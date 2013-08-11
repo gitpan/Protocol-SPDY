@@ -3,7 +3,7 @@ package Protocol::SPDY;
 use strict;
 use warnings;
 
-our $VERSION = '0.999_006';
+our $VERSION = '0.999_007';
 
 =head1 NAME
 
@@ -11,7 +11,7 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 SYNOPSIS
 
@@ -240,8 +240,10 @@ SSL/TLS next protocol negotiation for SPDY/3 with HTTP/1.1 fallback:
  );
  $loop->run;
 
-Show frames (one per line) from traffic capture (note that this needs to be
-post-TLS decryption, without any TCP/IP headers):
+Show frames (one per line) from traffic capture. Note that this needs to be
+post-TLS decryption, without any TCP/IP headers. Also, for tracing traffic
+on a live application, you'd hook the C<send_frame> and C<receive_frame>
+events instead.
 
  #!/usr/bin/env perl
  use strict;
@@ -257,7 +259,9 @@ post-TLS decryption, without any TCP/IP headers):
  	$spdy->on_read($_);
  }
 
-Simple L<IO::Async>-based server which reports the originating request:
+An L<IO::Async>-based server which reports the originating request. This
+should be just enough to implement a basic server for other frameworks
+- see L<Net::Async::SPDY::Server> for a more complete implementation:
 
  #!/usr/bin/env perl
  use strict;
@@ -282,20 +286,14 @@ Simple L<IO::Async>-based server which reports the originating request:
  		socktype => "stream",
  		port     => $ENV{PROTOCOL_SPDY_LISTEN_PORT} || 0,
  	},
- 	SSL_npn_protocols => [
- 		'spdy/3',
- 		# Normally you'd also list HTTP here,
- 		# but since we're only supporting SPDY
- 		# in this example, we don't do that.
- 		# 'http1.1'
- 	],
+ 	SSL_npn_protocols => [ 'spdy/3' ],
  	SSL_cert_file => 'certs/examples.crt',
  	SSL_key_file => 'certs/examples.key',
  	SSL_ca_path => 'certs/ProtocolSPDYCA',
  	on_accept => sub {
  		my $sock = shift;
  		print "Client connecting from " . join(':', $sock->peerhost, $sock->peerport) . ", we're using " . $sock->next_proto_negotiated . "\n";
- 		die "Wrong protocol" unless $sock->next_proto_negotiated eq 'spdy/3';
+ 
  		my $stream = IO::Async::Stream->new(handle => $sock);
  		my $spdy = Protocol::SPDY::Server->new;
  		# Pass all writes directly to the stream
@@ -304,9 +302,8 @@ Simple L<IO::Async>-based server which reports the originating request:
  			stream => sub {
  				my $ev = shift;
  				my $stream = shift;
- 				print "We have a new stream:\n";
  				$stream->closed->on_fail(sub {
- 					warn "We had an error: " . shift;
+ 					die "We had an error: " . shift;
  				});
  				my $hdr = { %{$stream->received_headers} };
  				my $req = HTTP::Request->new(
@@ -332,29 +329,9 @@ Simple L<IO::Async>-based server which reports the originating request:
  				);
  				$response->protocol($req->protocol);
  
- 				my $input = $req->as_string("\n");
- 				my $output = <<"HTML";
- <!DOCTYPE html>
- <html>
-  <head>
-   <title>Example SPDY server</title>
-   <style type="text/css">
- * { margin: 0; padding: 0 }
- h1 { color: #ccc; background: #333 }
- p { padding: 0.5em }
-   </style>
-  </head>
-  <body>
-   <h1>Protocol::SPDY example server</h1>
-   <p>
-    Your request was parsed as:
-   </p>
-   <pre>
- $input
-   </pre>
-  </body>
- </html>
- HTML
+ 				# Just dump the original request
+ 				my $output = $req->as_string("\n");
+ 
  				# At the protocol level we only care about bytes. Make sure that's all we have.
  				$output = Encode::encode('UTF-8' => $output);
  				$response->header('Content-Length' => length $output);
@@ -401,7 +378,9 @@ Simple L<IO::Async>-based server which reports the originating request:
  # Run until Ctrl-C or error
  $loop->run;
 
-L<IO::Async>-based client for simple GET requests:
+L<IO::Async>-based client for simple GET requests, again
+L<Net::Async::SPDY::Client> would be the place to look for a real client
+implementation:
 
  #!/usr/bin/env perl
  use strict;

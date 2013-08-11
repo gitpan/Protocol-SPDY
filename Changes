@@ -1,5 +1,16 @@
 Revision history for Protocol-SPDY
 
+0.999_007 2013-08-11 04:10:12 Europe/London
+	Bug fixes:
+	* Pass unhandled frames to separate ->dispatch_unhandled_frame method so
+	that ::Tracer class is able to ignore these.
+	* Provide empty ->write method for ::Tracer since we don't expect to have
+	an on_write handler here.
+
+	Documentation:
+	* Document events on Protocol::SPDY::Base and Protocol::SPDY::Stream.
+	* Trim down the server example
+
 0.999_006 2013-08-10 01:35:08 Europe/London
 	Features:
 	* send_frame and receive_frame events on Protocol::SPDY::Base, for hooks on

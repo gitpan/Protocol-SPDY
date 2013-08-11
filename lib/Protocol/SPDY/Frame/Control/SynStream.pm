@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SynStream;
 {
-  $Protocol::SPDY::Frame::Control::SynStream::VERSION = '0.999_006';
+  $Protocol::SPDY::Frame::Control::SynStream::VERSION = '0.999_007';
 }
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ Protocol::SPDY::Frame::Control::SynStream - obsolete, replaced by L<Protocol::SP
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 DESCRIPTION
 

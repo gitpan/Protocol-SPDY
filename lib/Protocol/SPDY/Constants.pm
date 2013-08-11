@@ -1,6 +1,6 @@
 package Protocol::SPDY::Constants;
 {
-  $Protocol::SPDY::Constants::VERSION = '0.999_006';
+  $Protocol::SPDY::Constants::VERSION = '0.999_007';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Constants - constant definitions for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_006
+version 0.999_007
 
 =head1 SYNOPSIS
 
