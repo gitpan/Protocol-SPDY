@@ -14,7 +14,7 @@ Protocol::SPDY::Frame::Control::HEADERS - header update packet
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 

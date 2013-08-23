@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::PING;
 {
-  $Protocol::SPDY::Frame::Control::PING::VERSION = '0.999_007';
+  $Protocol::SPDY::Frame::Control::PING::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::PING - aliveness test
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 

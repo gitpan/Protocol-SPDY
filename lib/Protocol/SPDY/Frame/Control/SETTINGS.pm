@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control::SETTINGS;
 {
-  $Protocol::SPDY::Frame::Control::SETTINGS::VERSION = '0.999_007';
+  $Protocol::SPDY::Frame::Control::SETTINGS::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control::SETTINGS - connection settings information
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 

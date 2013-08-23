@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Data;
 {
-  $Protocol::SPDY::Frame::Data::VERSION = '0.999_007';
+  $Protocol::SPDY::Frame::Data::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Data - data frame support
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 DESCRIPTION
 
@@ -77,8 +77,6 @@ sub as_packet {
 		$len >> 8,
 		$len & 0xFF;
 	$pkt .= $payload;
-	# warn "done packet: $pkt\n";
-	# hexdump($pkt);
 	return $pkt;
 }
 

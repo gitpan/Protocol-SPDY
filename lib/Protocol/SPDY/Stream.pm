@@ -1,6 +1,6 @@
 package Protocol::SPDY::Stream;
 {
-  $Protocol::SPDY::Stream::VERSION = '0.999_007';
+  $Protocol::SPDY::Stream::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Stream - single stream representation within a L<Protocol::SPDY>
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 

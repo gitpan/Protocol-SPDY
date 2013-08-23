@@ -1,6 +1,6 @@
 package Protocol::SPDY::Test;
 {
-  $Protocol::SPDY::Test::VERSION = '0.999_007';
+  $Protocol::SPDY::Test::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -16,7 +16,7 @@ Protocol::SPDY::Test - helper functions for testing things
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 

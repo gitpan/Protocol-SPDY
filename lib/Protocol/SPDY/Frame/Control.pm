@@ -1,6 +1,6 @@
 package Protocol::SPDY::Frame::Control;
 {
-  $Protocol::SPDY::Frame::Control::VERSION = '0.999_007';
+  $Protocol::SPDY::Frame::Control::VERSION = '1.000';
 }
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ Protocol::SPDY::Frame::Control - control frame subclass for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 DESCRIPTION
 
@@ -114,7 +114,6 @@ sub as_packet {
 	my $self = shift;
 	my %args = @_;
 	my $len = length($args{payload});
-	warn "undef: " . join ',', $_ for grep !defined($self->$_), qw(version type);
 	my $pkt = pack 'n1n1C1n1C1',
 		($self->is_control ? 0x8000 : 0x0000) | ($self->version & 0x7FFF),
 		$self->type,
@@ -122,7 +121,6 @@ sub as_packet {
 		$len >> 8,
 		$len & 0xFF;
 	$pkt .= $args{payload};
-	# warn "done packet: $pkt\n";
 	return $pkt;
 }
 

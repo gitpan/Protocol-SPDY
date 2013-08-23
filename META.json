@@ -53,7 +53,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "mailto" : "bug-protocol-spdy at rt.cpan.org",
@@ -61,6 +61,6 @@
       },
       "homepage" : "http://search.cpan.org/dist/Protocol-SPDY/"
    },
-   "version" : "0.999_007"
+   "version" : "1.000"
 }
 

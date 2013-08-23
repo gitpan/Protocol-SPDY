@@ -3,7 +3,7 @@ package Protocol::SPDY;
 use strict;
 use warnings;
 
-our $VERSION = '0.999_007';
+our $VERSION = '1.000';
 
 =head1 NAME
 
@@ -11,7 +11,7 @@ Protocol::SPDY - abstract support for the SPDY protocol
 
 =head1 VERSION
 
-version 0.999_007
+version 1.000
 
 =head1 SYNOPSIS
 
